@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educa AI - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar">
+            <h1 class="logo-sidebar">EDUCA AI</h1>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="#"><img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">Pastas</a></li>
+                    <li><a href="#"><img src="{{ url_for('static', filename='imagens/chat.png') }}" alt="Ícone Chat">Chat</a></li>
+                    <li><a href="#"><img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Ícone Perfil">Perfil</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="content">
+            <div class="subject-grid">
+                <a href="#" class="subject-card matematica">Matemática</a>
+                <a href="#" class="subject-card fisica">Física</a>
+                <a href="#" class="subject-card quimica">Química</a>
+                <a href="#" class="subject-card biologia">Biologia</a>
+                <a href="#" class="subject-card historia">História</a>
+                <a href="#" class="subject-card geografia">Geografia</a>
+                <a href="#" class="subject-card sociologia">Sociologia</a>
+                <a href="#" class="subject-card filosofia">Filosofia</a>
+                <a href="#" class="subject-card artes">Artes</a>
+                <a href="#" class="subject-card literatura">Literatura</a>
+                <a href="#" class="subject-card portugues">Português</a>
+                <a href="#" class="subject-card ingles">Inglês</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
