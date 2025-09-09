@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educa AI - Pastas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar">
+            <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
+            <h1 class="logo-sidebar">EDUCA AI</h1>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="{{ url_for('home_page') }}"><img src="{{ url_for('static', filename='imagens/casa.png') }}" alt="Ícone Home">Home</a></li>
+                    <li><a href="{{ url_for('pastas_page') }}"><img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">Pastas</a></li>
+                    <li><a href="{{ url_for('chat_page') }}"><img src="{{ url_for('static', filename='imagens/chat.png') }}" alt="Ícone Chat">Chat</a></li>
+                    <li><a href="{{ url_for('perfil_page') }}"><img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Ícone Perfil">Perfil</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="content">
+            <div class="file-grid">
+                <a href="#" class="file-card folder">
+                    <img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">
+                    <span>Pasta 1</span>
+                </a>
+                <a href="#" class="file-card folder">
+                    <img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">
+                    <span>Pasta 2</span>
+                </a>
+                <a href="#" class="file-card folder">
+                    <img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">
+                    <span>Pasta 3</span>
+                </a>
+                <a href="#" class="file-card folder">
+                    <img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">
+                    <span>Pasta 4</span>
+                </a>
+                <a href="#" class="file-card file">
+                    <img src="{{ url_for('static', filename='imagens/ipdf.png') }}" alt="Ícone PDF">
+                    <span>Prova Química</span>
+                </a>
+                <a href="#" class="file-card file">
+                    <img src="{{ url_for('static', filename='imagens/ipdf.png') }}" alt="Ícone PDF">
+                    <span>Prova Física</span>
+                </a>
+                <a href="https://www.youtube.com/watch?v=XsN0e_xPyNI" target="_blank" class="file-card file">
+                    <img src="https://img.youtube.com/vi/XsN0e_xPyNI/hqdefault.jpg" alt="Capa do Vídeo">
+                    <span>Compreensão e Interpretação de Texto</span>
+                </a>
+                <a href="#" class="file-card file">
+                    <img src="{{ url_for('static', filename='imagens/ipdf.png') }}" alt="Ícone PDF">
+                    <span>Questões Português</span>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

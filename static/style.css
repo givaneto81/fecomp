@@ -1,50 +1,33 @@
-/* ------------------------ LOGIN ------------------------ */
+/* ------------------------ GERAL ------------------------ */
 body {
     background-image: url('imagens/fundo.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-.login-container {
-    background-color: #ffffff;
-    padding: 40px 50px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 350px;
-}
-
-.logo {
-    color: #007bff;
-    font-size: 2.5em;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.subtitle {
-    color: #6c757d;body {
     background-color: #f0f2f5;
     font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
+
 }
 
+/* ------------------------ LOGIN ------------------------ */
 .login-container {
     background-color: #ffffff;
     padding: 40px 50px;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 350px;
+    gap: 15px;
+    max-width: 400px;
+    width: 100%;
+    align-items: center;
+    margin: 40px auto;
+}
+
+.logo-image {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
 }
 
 .logo {
@@ -120,87 +103,31 @@ body {
     color: #0056b3;
     text-decoration: underline;
 }
-    font-size: 1em;
-    margin-top: 0;
-    margin-bottom: 30px;
-}
 
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.login-form label {
-    text-align: left;
-    color: #495057;
-    font-weight: 600;
-}
-
-.login-form input {
-    padding: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    font-size: 1em;
-    transition: border-color 0.3s;
-}
-
-.login-form input:focus {
-    outline: none;
-    border-color: #007bff;
-}
-
-.btn-entrar {
-    background-color: #28a745;
-    color: white;
-    padding: 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 15px;
-}
-
-.btn-entrar:hover {
-    background-color: #218838;
-}
-
-.links {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    font-size: 0.9em;
-}
-
-.links a {
-    color: #007bff;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.links a:hover {
-    color: #0056b3;
-    text-decoration: underline;
-}
-/* ------------------------ HOME ------------------------ */
+/* ------------------------ HOME & PASTAS ------------------------ */
 .main-container {
     display: flex;
     height: 100vh;
-    background-color: #f0f2f5;
 }
 
-/* Estilos da barra lateral */
+/* Estilos da barra lateral - Modo Padrão */
 .sidebar {
     width: 250px;
-    background-color: #343a40;
+    background-color: #343a40; /* Cor padrão */
     color: white;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.5s, color 0.5s, box-shadow 0.5s;
+}
+
+/* Estilos da barra lateral - Modo Noturno (ativado pelo JS) */
+.sidebar.dark-mode {
+    background-color: #121212; /* Cor mais escura */
+    color: #f8f9fa; /* Cor do texto */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4);
 }
 
 .logo-sidebar {
@@ -233,6 +160,11 @@ body {
     color: #ffffff;
 }
 
+.nav-menu img {
+    width: 30px; 
+    height: auto;
+}
+
 /* Estilos da área de conteúdo principal */
 .content {
     flex: 1;
@@ -242,6 +174,7 @@ body {
     align-items: center;
 }
 
+/* Estilos da grade de assuntos */
 .subject-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -280,7 +213,37 @@ body {
 .portugues { background-color: #f47b97; }
 .ingles { background-color: #17a2b8; }
 
-.nav-menu img {
-    width: 30px; 
+
+/* Estilos da grade de arquivos */
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.file-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #495057;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.file-card img {
+    width: 60px;
     height: auto;
+    margin-bottom: 10px;
 }
