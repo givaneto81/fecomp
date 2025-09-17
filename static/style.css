@@ -23,12 +23,12 @@ body.login-page {
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 350px;
+    width: 500px;
     align-items: center;
 }
 
 .logo-image {
-    width: 150px;
+    width: 200px;
     height: auto;
     margin-bottom: 20px;
 }
@@ -119,6 +119,13 @@ body.login-page {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
 
 /* ------------------------ HOME, PASTAS & PERFIL ------------------------ */
@@ -381,4 +388,86 @@ body.login-page {
     font-size: 1.2em;
     color: #6c757d;
     margin-bottom: 5px;
+}
+
+/* ------------------------ PERFIL NA SIDEBAR ------------------------ */
+.user-profile {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #495057;
+    text-align: center;
+    width: 100%;
+}
+
+.user-profile p {
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    color: #f8f9fa;
+}
+
+.user-profile a {
+    color: #adb5bd;
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.user-profile a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* ------------------------ FORMULÁRIO DE CRIAÇÃO ------------------------ */
+.form-container {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 30px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.add-subject-form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.add-subject-form h3 {
+    margin: 0;
+    font-weight: 600;
+    color: #495057;
+}
+
+.add-subject-form input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+.add-subject-form button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.add-subject-form button:hover {
+    background-color: #0056b3;
+}
+
+.page-title {
+    width: 100%;
+    max-width: 900px;
+    font-size: 2em;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 20px;
+    text-align: left;
 }
