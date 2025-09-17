@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <div class="main-container">
@@ -16,10 +17,10 @@
             <h1 class="logo-sidebar">EDUCA AI</h1>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="{{ url_for('home_page') }}"><img src="{{ url_for('static', filename='imagens/casa.png') }}" alt="Ícone Home">Home</a></li>
-                    <li><a href="{{ url_for('pastas_page', subject_id=subject.id) }}"><img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">Pastas</a></li>
-                    <li><a href="{{ url_for('chat_page') }}"><img src="{{ url_for('static', filename='imagens/chat.png') }}" alt="Ícone Chat">Chat</a></li>
-                    <li><a href="{{ url_for('perfil_page') }}"><img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Ícone Perfil">Perfil</a></li>
+                    <li><a href="{{ url_for('home_page') }}"><i data-feather="home"></i>Home</a></li>
+                    <li><a href="{{ url_for('pastas_page', subject_id=subject.id) }}"><i data-feather="folder"></i>Pastas</a></li>
+                    <li><a href="{{ url_for('chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
+                    <li><a href="{{ url_for('perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
                 </ul>
             </nav>
             <div class="user-profile">
@@ -32,9 +33,7 @@
             </div>
         </aside>
         <main class="content" style="flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 50px;">
-            
             <h2 class="page-title">Matéria: {{ subject.name }}</h2>
-
             <div class="form-container">
                 <form action="{{ url_for('add_folder', subject_id=subject.id) }}" method="post" class="add-subject-form">
                     <h3>Criar Nova Pasta</h3>
@@ -42,18 +41,20 @@
                     <button type="submit">Adicionar</button>
                 </form>
             </div>
-
             <div class="file-grid">
                 {% for folder in folders %}
                     <a href="#" class="file-card folder">
-                        <img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">
+                        <i data-feather="folder" class="file-icon"></i>
                         <span>{{ folder.name }}</span>
                     </a>
                 {% else %}
-                    <p>Nenhuma pasta criada nesta matéria ainda.</p>
+                    <p class="empty-message">Nenhuma pasta criada nesta matéria ainda.</p>
                 {% endfor %}
             </div>
         </main>
     </div>
+    <script>
+      feather.replace(); // Ativa os ícones
+    </script>
 </body>
 </html>

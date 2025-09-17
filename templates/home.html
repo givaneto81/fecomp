@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <div class="main-container">
@@ -16,26 +17,10 @@
             <h1 class="logo-sidebar">EDUCA AI</h1>
             <nav class="nav-menu">
                 <ul>
-                    <li>
-                        <a href="{{ url_for('home_page') }}">
-                            <img src="{{ url_for('static', filename='imagens/casa.png') }}" alt="Ícone Home">Home
-                        </a>
-                    </li>
-                    <li>
-                         <a href="#" onclick="alert('Por favor, selecione uma matéria primeiro na página Home.');">
-                            <img src="{{ url_for('static', filename='imagens/pastas.png') }}" alt="Ícone Pastas">Pastas
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('chat_page') }}">
-                            <img src="{{ url_for('static', filename='imagens/chat.png') }}" alt="Ícone Chat">Chat
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('perfil_page') }}">
-                            <img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Ícone Perfil">Perfil
-                        </a>
-                    </li>
+                    <li><a href="{{ url_for('home_page') }}"><i data-feather="home"></i>Home</a></li>
+                    <li><a href="#" onclick="alert('Por favor, selecione uma matéria primeiro na página Home.');"><i data-feather="folder"></i>Pastas</a></li>
+                    <li><a href="{{ url_for('chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
+                    <li><a href="{{ url_for('perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
                 </ul>
             </nav>
             <div class="user-profile">
@@ -57,14 +42,17 @@
             </div>
             <div class="subject-grid">
                 {% for subject in subjects %}
-                    <a href="{{ url_for('pastas_page', subject_id=subject.id) }}" class="subject-card" style="background-color: #007bff;">
+                    <a href="{{ url_for('pastas_page', subject_id=subject.id) }}" class="subject-card">
                         {{ subject.name }}
                     </a>
                 {% else %}
-                    <p>Você ainda não criou nenhuma matéria. Adicione uma acima!</p>
+                    <p class="empty-message">Você ainda não criou nenhuma matéria. Adicione uma acima!</p>
                 {% endfor %}
             </div>
         </main>
     </div>
+    <script>
+      feather.replace(); // Ativa os ícones
+    </script>
 </body>
 </html>
