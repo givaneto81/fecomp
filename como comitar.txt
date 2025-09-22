@@ -1,3 +1,0 @@
-git add .
-git commit -m "nome do comit"
-git push origin main

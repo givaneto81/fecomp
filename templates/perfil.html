@@ -27,12 +27,29 @@
                 {% if session['user_name'] %}
                     <p>Olá, {{ session['user_name'] }}!</p>
                     <a href="{{ url_for('logout') }}">Sair</a>
-                {% else %}
-                    <a href="{{ url_for('login_page') }}">Fazer Login</a>
                 {% endif %}
+            </div>
+            <div class="theme-switch-wrapper">
+                <i data-feather="sun"></i>
+                <label class="theme-switch" for="theme-switch-checkbox">
+                    <input type="checkbox" id="theme-switch-checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <i data-feather="moon"></i>
             </div>
         </aside>
         <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
             <div class="profile-container">
                 <img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Foto de Perfil" class="profile-pic">
                 <h2 class="profile-name">Nome: {{ user.name }}</h2>
@@ -57,7 +74,6 @@
             </form>
         </div>
     </div>
-
     <div id="change-password-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -71,7 +87,6 @@
             </form>
         </div>
     </div>
-
     <div id="delete-account-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -84,8 +99,9 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/perfil.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script>
-      feather.replace(); // Ativa os ícones
+      feather.replace();
     </script>
 </body>
 </html>
