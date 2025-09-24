@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Educa AI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('views.home_page') }}" class="nav-logo">Educa AI</a>
+            <ul class="nav-menu">
+                {% if session['user_id'] %}
+                    <li class="nav-item"><a href="{{ url_for('views.home_page') }}" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="{{ url_for('views.chat_page') }}" class="nav-link">Chat</a></li>
+                    <li class="nav-item"><a href="{{ url_for('views.perfil_page') }}" class="nav-link">Perfil</a></li>
+                    <li class="nav-item"><a href="{{ url_for('auth.logout') }}" class="nav-link">Sair</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="{{ url_for('auth.login_page') }}" class="nav-link">Login</a></li>
+                    <li class="nav-item"><a href="{{ url_for('auth.register_page') }}" class="nav-link">Registrar</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Educa AI. Todos os direitos reservados.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

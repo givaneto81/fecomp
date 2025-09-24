@@ -1,6 +1,7 @@
 import os
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, send_from_directory, current_app
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 from . import db
 from .models import User, Subject, Folder, File
 from . import login_required
@@ -48,12 +49,17 @@ def perfil_page():
 @views_bp.route('/add_subject', methods=['POST'])
 @login_required
 def add_subject():
-    subject_name = request.form.get('subject_name')
+    subject_name = request.form.get('subject_name', '').strip()
     if subject_name:
-        new_subject = Subject(name=subject_name, user_id=session['user_id'])
-        db.session.add(new_subject)
-        db.session.commit()
-        flash('Matéria adicionada com sucesso!', 'success')
+        # Verifica se já existe uma matéria com o mesmo nome para este usuário
+        exists = Subject.query.filter_by(user_id=session['user_id'], name=subject_name).first()
+        if not exists:
+            new_subject = Subject(name=subject_name, user_id=session['user_id'])
+            db.session.add(new_subject)
+            db.session.commit()
+            flash('Matéria adicionada com sucesso!', 'success')
+        else:
+            flash('Você já possui uma matéria com este nome.', 'warning')
     else:
         flash('O nome da matéria não pode estar vazio.', 'error')
     return redirect(url_for('views.home_page'))
@@ -62,12 +68,17 @@ def add_subject():
 @login_required
 def add_folder(subject_id):
     subject = Subject.query.filter_by(id=subject_id, user_id=session['user_id']).first_or_404()
-    folder_name = request.form.get('folder_name')
+    folder_name = request.form.get('folder_name', '').strip()
     if folder_name:
-        new_folder = Folder(name=folder_name, subject_id=subject.id)
-        db.session.add(new_folder)
-        db.session.commit()
-        flash('Pasta criada com sucesso!', 'success')
+        # Verifica se já existe uma pasta com o mesmo nome dentro desta matéria
+        exists = Folder.query.filter_by(subject_id=subject.id, name=folder_name).first()
+        if not exists:
+            new_folder = Folder(name=folder_name, subject_id=subject.id)
+            db.session.add(new_folder)
+            db.session.commit()
+            flash('Pasta criada com sucesso!', 'success')
+        else:
+            flash('Você já possui uma pasta com este nome nesta matéria.', 'warning')
     else:
         flash('O nome da pasta não pode estar vazio.', 'error')
     return redirect(url_for('views.pastas_page', subject_id=subject_id))
@@ -213,12 +224,12 @@ def delete_folder(folder_id):
 @views_bp.route('/update_profile', methods=['POST'])
 @login_required
 def update_profile():
-    new_name = request.form.get('new_name')
+    new_name = request.form.get('new_name', '').strip()
     if new_name:
         user = User.query.get(session['user_id'])
         user.name = new_name
         db.session.commit()
-        session['user_name'] = new_name
+        session['user_name'] = new_name # Atualiza o nome na sessão
         flash('Nome atualizado com sucesso!', 'success')
     else:
         flash('O nome não pode ficar em branco.', 'error')
@@ -227,54 +238,65 @@ def update_profile():
 @views_bp.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
-    current_password = request.form.get('current_password')
-    new_password = request.form.get('new_password')
     user = User.query.get(session['user_id'])
 
+    # Caso de borda: não permitir mudança de senha para contas OAuth
     if not user.password_hash:
         flash('Você não pode alterar a senha de uma conta criada com o Google.', 'warning')
         return redirect(url_for('views.perfil_page'))
 
-    if user and check_password_hash(user.password_hash, current_password):
-        if new_password:
+    current_password = request.form.get('current_password')
+    new_password = request.form.get('new_password')
+
+    if not current_password or not new_password:
+        flash('Todos os campos de senha são obrigatórios.', 'error')
+        return redirect(url_for('views.perfil_page'))
+
+    if check_password_hash(user.password_hash, current_password):
+        if len(new_password) < 6: # Exemplo de validação de força da senha
+            flash('A nova senha deve ter pelo menos 6 caracteres.', 'error')
+        else:
             user.password_hash = generate_password_hash(new_password)
             db.session.commit()
             flash('Senha alterada com sucesso!', 'success')
-        else:
-            flash('A nova senha não pode estar em branco.', 'error')
     else:
         flash('A senha atual está incorreta.', 'error')
+
     return redirect(url_for('views.perfil_page'))
 
 @views_bp.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
     user = User.query.get(session['user_id'])
-    if user:
-        # Lógica de deleção de arquivos físicos primeiro
-        try:
-            # Coleta todos os arquivos associados ao usuário
-            files_to_delete = File.query.join(Folder).join(Subject).filter(Subject.user_id == user.id).all()
-            filenames = [f.filename for f in files_to_delete]
+    if not user:
+        flash('Usuário não encontrado. A exclusão não pode ser concluída.', 'error')
+        return redirect(url_for('views.perfil_page'))
 
-            # Deleta o usuário do banco de dados (cascade deve cuidar do resto)
-            db.session.delete(user)
-            db.session.commit()
+    # Coleta os nomes dos arquivos antes de iniciar a transação
+    files_to_delete = [f.filename for f in File.query.join(Folder).join(Subject).filter(Subject.user_id == user.id).all()]
 
-            # Deleta os arquivos físicos
-            for filename in filenames:
-                try:
-                    os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                except OSError as e:
-                    print(f"Erro ao deletar arquivo físico da conta: {e}")
+    try:
+        # 1. Deleta os arquivos físicos primeiro
+        for filename in files_to_delete:
+            try:
+                file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+            except OSError as e:
+                # Se não for possível deletar um arquivo, interrompe e faz rollback
+                raise Exception(f"Erro ao deletar o arquivo físico {filename}: {e}")
 
-            session.clear()
-            flash('Sua conta e todos os seus dados foram excluídos com sucesso.', 'success')
-            return redirect(url_for('auth.login_page'))
-        except Exception as e:
-            db.session.rollback()
-            flash(f"Ocorreu um erro ao excluir sua conta: {e}", "error")
-            return redirect(url_for('views.perfil_page'))
+        # 2. Se a exclusão dos arquivos for bem-sucedida, deleta do banco de dados
+        db.session.delete(user)
+        db.session.commit()
 
-    flash('Não foi possível encontrar a conta para exclusão.', 'error')
-    return redirect(url_for('views.perfil_page'))
+        session.clear()
+        flash('Sua conta e todos os seus dados foram excluídos com sucesso.', 'success')
+        return redirect(url_for('auth.login_page'))
+
+    except Exception as e:
+        # Faz o rollback em caso de qualquer erro
+        db.session.rollback()
+        print(f"Ocorreu um erro ao excluir a conta: {e}")
+        flash("Ocorreu um erro crítico ao tentar excluir sua conta. A operação foi cancelada para proteger seus dados. Por favor, contate o suporte.", "error")
+        return redirect(url_for('views.perfil_page'))

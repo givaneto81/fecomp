@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Erro no Servidor{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <h1 class="error-title">Erro 500</h1>
+    <p class="error-message">Oops! Parece que algo deu errado do nosso lado.</p>
+    <p class="error-suggestion">Nossa equipe já foi notificada sobre o problema. Por favor, tente novamente mais tarde.</p>
+    <a href="{{ url_for('views.home_page') }}" class="btn btn-primary">Voltar para a Home</a>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .error-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 70vh;
+        color: #333;
+    }
+    .error-title {
+        font-size: 5rem;
+        font-weight: 700;
+        color: #dc3545;
+        margin-bottom: 10px;
+    }
+    .error-message {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+    .error-suggestion {
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
