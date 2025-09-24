@@ -15,9 +15,18 @@ def login_page():
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register_page():
     if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip().lower()
         senha = request.form.get('senha')
+
+        if not name or not email or not senha:
+            flash('Todos os campos são obrigatórios.', 'error')
+            return render_template('register.html', name=name, email=email)
+
+        # Adicionar validação de e-mail (simples)
+        if '@' not in email or '.' not in email:
+            flash('Formato de e-mail inválido.', 'error')
+            return render_template('register.html', name=name, email=email)
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
@@ -29,18 +38,28 @@ def register_page():
         db.session.add(new_user)
         db.session.commit()
 
-        # Enviar e-mail de verificação
-        send_verification_email(new_user.email)
+        try:
+            send_verification_email(new_user.email)
+            flash('Cadastro realizado! Um link de verificação foi enviado para o seu e-mail.', 'success')
+        except Exception as e:
+            # Em caso de falha no envio de e-mail, o usuário não deve ser bloqueado
+            # O ideal seria ter um mecanismo para reenviar o e-mail
+            print(f"Falha ao enviar e-mail de verificação para {email}: {e}")
+            flash('Cadastro realizado com sucesso! Houve um problema ao enviar o e-mail de verificação. Contate o suporte.', 'warning')
 
-        flash('Cadastro realizado! Um link de verificação foi enviado para o seu e-mail.', 'success')
         return redirect(url_for('auth.login_page'))
 
     return render_template('register.html')
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    email = request.form.get('email')
+    email = request.form.get('email', '').strip().lower()
     senha = request.form.get('senha')
+
+    if not email or not senha:
+        flash('Email e senha são obrigatórios.', 'error')
+        return redirect(url_for('auth.login_page'))
+
     user = User.query.filter_by(email=email).first()
 
     if user and user.password_hash and check_password_hash(user.password_hash, senha):
@@ -51,6 +70,8 @@ def login():
         session.clear()
         session['user_id'] = user.id
         session['user_name'] = user.name
+        # Adiciona proteção contra fixação de sessão
+        session.permanent = True
         return redirect(url_for('views.home_page'))
     else:
         flash('Email ou senha incorretos.', 'error')
