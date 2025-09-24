@@ -40,8 +40,8 @@ Para rodar o projeto localmente, siga os passos abaixo.
    ```bash
    pip install -r requirements.txt
    ```
-   *(Nota: O arquivo `requirements.txt` não foi fornecido, mas ele deveria conter as seguintes bibliotecas)*
-   ```
+   ** Requirements.txt: **
+   ```md
    Flask
    Flask-SQLAlchemy
    psycopg2-binary  # ou o driver do seu banco
