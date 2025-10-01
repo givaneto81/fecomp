@@ -33,17 +33,9 @@
             {% endwith %}
             
             <button type="submit" class="btn-entrar">Entrar</button>
-
-            <div class="divider">
-                <span>ou</span>
-            </div>
-
-            <a href="{{ url_for('auth.google_login') }}" class="btn-google">
-                <img src="{{ url_for('static', filename='imagens/google-icon.png') }}" alt="Google Icon">
-                Entrar com Google
-            </a>
             
             <div class="links">
+                <a href="#" class="link-forgot">Esqueceu a Senha?</a>
                 <a href="{{ url_for('auth.register_page') }}" class="link-create">Criar conta</a>
             </div>
         </form>
