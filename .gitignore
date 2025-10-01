@@ -1,0 +1,18 @@
+# Ambiente virtual
+venv/
+*.venv
+.venv
+
+# Caches do Python
+__pycache__/
+*.pyc
+
+# Arquivos de upload dos usuários
+fecomp/uploads/
+
+# Arquivo de ambiente (será criado na Fase 1)
+.env
+
+# Configurações de IDEs/Editores
+.vscode/
+.idea/

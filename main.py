@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 import google.generativeai as genai
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +9,7 @@ from functools import wraps
 
 app = Flask(__name__)
 
+
 # --- CONFIGURAÇÃO DO SERVIDOR ---
 app.config['UPLOAD_FOLDER'] = 'fecomp/uploads'
 app.config['SECRET_KEY'] = "santacruzfutebolclube"
@@ -16,6 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.debug = True
 
 db = SQLAlchemy(app)
+load_dotenv()
 
 # --- DECORATOR PARA EXIGIR LOGIN ---
 def login_required(f):

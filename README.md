@@ -47,6 +47,7 @@ Para rodar o projeto localmente, siga os passos abaixo.
    psycopg2-binary  # ou o driver do seu banco
    google-generativeai
    werkzeug
+   python-dotenv
    ```
 
 4. **Configure o Banco de Dados:**
