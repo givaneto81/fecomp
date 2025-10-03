@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educa AI - Perfil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar">
+            <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
+            <h1 class="logo-sidebar">EDUCA AI</h1>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="{{ url_for('views.home_page') }}"><i data-feather="home"></i>Home</a></li>
+                    <li><a href="#" onclick="alert('Por favor, selecione uma matéria primeiro na página Home.');"><i data-feather="folder"></i>Pastas</a></li>
+                    <li><a href="{{ url_for('views.chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
+                    <li><a href="{{ url_for('views.perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                {% if session['user_name'] %}
+                    <p>Olá, {{ session['user_name'] }}!</p>
+                    <a href="{{ url_for('auth.logout') }}">Sair</a>
+                {% endif %}
+            </div>
+            <div class="theme-switch-wrapper">
+                <i data-feather="sun"></i>
+                <label class="theme-switch" for="theme-switch-checkbox">
+                    <input type="checkbox" id="theme-switch-checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <i data-feather="moon"></i>
+            </div>
+        </aside>
+        <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="profile-container">
+                <img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Foto de Perfil" class="profile-pic">
+                <h2 class="profile-name">Nome: {{ user.name }}</h2>
+                <h3 class="profile-email">Email: {{ user.email }}</h3>
+                <div class="profile-actions">
+                    <button id="edit-name-btn" class="profile-btn">Editar Nome</button>
+                    <button id="change-password-btn" class="profile-btn">Alterar Senha</button>
+                    <button id="delete-account-btn" class="profile-btn delete">Excluir Conta</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="edit-name-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Editar Nome</h2>
+            <form action="{{ url_for('views.update_profile') }}" method="post" class="modal-form">
+                <label for="new_name">Novo Nome:</label>
+                <input type="text" id="new_name" name="new_name" value="{{ user.name }}" required>
+                <button type="submit" class="btn-entrar">Salvar</button>
+            </form>
+        </div>
+    </div>
+    <div id="change-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Alterar Senha</h2>
+            <form action="{{ url_for('views.change_password') }}" method="post" class="modal-form">
+                <label for="current_password">Senha Atual:</label>
+                <input type="password" id="current_password" name="current_password" required>
+                <label for="new_password">Nova Senha:</label>
+                <input type="password" id="new_password" name="new_password" required>
+                <button type="submit" class="btn-entrar">Alterar</button>
+            </form>
+        </div>
+    </div>
+    <div id="delete-account-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Excluir Conta</h2>
+            <p>Você tem certeza? Esta ação é irreversível e todos os seus dados serão perdidos.</p>
+            <form action="{{ url_for('views.delete_account') }}" method="post">
+                <button type="submit" class="profile-btn delete">Sim, excluir minha conta</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/perfil.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script>
+      feather.replace();
+    </script>
+</body>
+</html>

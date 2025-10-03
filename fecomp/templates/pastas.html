@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educa AI - {{ subject.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar">
+            <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
+            <h1 class="logo-sidebar">EDUCA AI</h1>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="{{ url_for('views.home_page') }}"><i data-feather="home"></i>Home</a></li>
+                    <li><a href="{{ url_for('views.pastas_page', subject_id=subject.id) }}"><i data-feather="folder"></i>Pastas</a></li>
+                    <li><a href="{{ url_for('views.chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
+                    <li><a href="{{ url_for('views.perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                {% if session['user_name'] %}
+                    <p>Olá, {{ session['user_name'] }}!</p>
+                    <a href="{{ url_for('auth.logout') }}">Sair</a>
+                {% endif %}
+            </div>
+            <div class="theme-switch-wrapper">
+                <i data-feather="sun"></i>
+                <label class="theme-switch" for="theme-switch-checkbox">
+                    <input type="checkbox" id="theme-switch-checkbox" />
+                    <div class="slider round"></div>
+                </label>
+                <i data-feather="moon"></i>
+            </div>
+        </aside>
+        <main class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <h2 class="page-title">Matéria: {{ subject.name }}</h2>
+            <div class="form-container">
+                <form action="{{ url_for('views.add_folder', subject_id=subject.id) }}" method="post" class="add-subject-form">
+                    <h3>Criar Nova Pasta</h3>
+                    <input type="text" name="folder_name" placeholder="Nome da Pasta" required>
+                    <button type="submit">Adicionar</button>
+                </form>
+            </div>
+            <div class="file-grid">
+                {% for folder in folders %}
+                    <div class="file-card folder contrast-card" style="background-color: {{ folder.color }};">
+                        <a href="{{ url_for('views.folders', folder_id=folder.id) }}" class="folder-link">
+                            <i data-feather="folder" class="file-icon"></i>
+                            <span>{{ folder.name }}</span>
+                        </a>
+                        <div class="folder-actions">
+                            <button class="action-btn rename-btn" data-folder-id="{{ folder.id }}" data-folder-name="{{ folder.name }}"><i data-feather="edit-2"></i></button>
+                            <button class="action-btn color-btn" data-folder-id="{{ folder.id }}" data-folder-color="{{ folder.color }}"><i data-feather="droplet"></i></button>
+                            <button class="action-btn delete-btn" data-folder-id="{{ folder.id }}"><i data-feather="trash-2"></i></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if not folders %}
+                <p class="empty-message">Nenhuma pasta criada. Adicione uma acima!</p>
+            {% endif %}
+        </main>
+    </div>
+
+    <div id="rename-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Renomear Pasta</h2>
+            <form id="rename-form" action="" method="post" class="modal-form">
+                <label for="new_folder_name">Novo nome:</label>
+                <input type="text" id="new_folder_name" name="new_folder_name" required>
+                <button type="submit" class="btn-entrar">Salvar</button>
+            </form>
+        </div>
+    </div>
+    <div id="color-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Alterar Cor da Pasta</h2>
+            <form id="color-form" action="" method="post" class="modal-form">
+                <label for="new_color">Nova cor:</label>
+                <div class="color-input-wrapper">
+                    <span>#</span>
+                    <input type="text" id="new_color_hex" name="new_color_hex" maxlength="6" pattern="[a-fA-F0-9]{6}">
+                    <input type="color" id="new_color_picker" name="new_color">
+                </div>
+                <button type="submit" class="btn-entrar">Salvar</button>
+            </form>
+        </div>
+    </div>
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Excluir Pasta</h2>
+            <p>Você tem certeza? Todos os arquivos dentro desta pasta também serão excluídos. Esta ação é irreversível.</p>
+            <form id="delete-form" action="" method="post">
+                <button type="submit" class="profile-btn delete">Sim, excluir esta pasta</button>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/contraste.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pastas.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script>
+      feather.replace();
+    </script>
+</body>
+</html>

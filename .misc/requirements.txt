@@ -1,0 +1,7 @@
+# requirements.txt
+   Flask
+   Flask-SQLAlchemy
+   psycopg2-binary  # ou o driver do seu banco, no meu caso é o psql
+   google-generativeai
+   werkzeug
+   python-dotenv
