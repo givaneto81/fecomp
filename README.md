@@ -1,4 +1,4 @@
-# Educa AI - Repositório Académico Inteligente
+# Educa AI - Repositório Acadêmico Inteligente
 
 Educa AI é uma aplicação web desenvolvida em Flask que funciona como um repositório académico pessoal, permitindo que os estudantes organizem os seus materiais e conversem com uma IA.
 
