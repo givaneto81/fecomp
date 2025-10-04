@@ -1,5 +1,6 @@
-from fecomp import create_app
-from fecomp.__init__ import db
+import os
+from fecomp.__init__ import create_app
+from fecomp.extensions import db
 
 # cria uma instância da sua aplicação Flask
 app = create_app()

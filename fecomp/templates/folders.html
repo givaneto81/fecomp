@@ -1,88 +1,41 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educa AI - {{ folder.name }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/feather-icons"></script>
-</head>
-<body>
-    <div id="file-viewer-modal" class="modal">
-        <div class="modal-content file-viewer-content">
-            <span class="close-btn" id="close-viewer-btn">&times;</span>
-            <div id="viewer-container"></div>
+{% extends 'base.html' %}
+
+{% block title %}{{ folder.name }}{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Pasta: {{ folder.name }}</h2>
+<div class="file-grid">
+    {% for file in files %}
+    <div class="file-card">
+        <a href="#" class="file-link" onclick="openFileViewer('{{ url_for('views.uploaded_file', filename=file.filename) }}', '{{ file.original_filename }}')">
+            <i data-feather="file-text" class="file-icon"></i>
+            <span>{{ file.original_filename }}</span>
+        </a>
+        <div class="file-actions">
+            <button class="action-btn-file delete-file-btn" data-file-id="{{ file.id }}"><i data-feather="trash-2"></i></button>
         </div>
     </div>
-    <div class="main-container">
-        <aside class="sidebar">
-            <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
-            <h1 class="logo-sidebar">EDUCA AI</h1>
-            <nav class="nav-menu">
-                <ul>
-                    <li><a href="{{ url_for('views.home_page') }}"><i data-feather="home"></i>Home</a></li>
-                    <li><a href="{{ url_for('views.pastas_page', subject_id=folder.subject.id) }}"><i data-feather="folder"></i>Pastas</a></li>
-                    <li><a href="{{ url_for('views.chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
-                    <li><a href="{{ url_for('views.perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
-                </ul>
-            </nav>
-            <div class="user-profile">
-                {% if session['user_name'] %}
-                    <p>Olá, {{ session['user_name'] }}!</p>
-                    <a href="{{ url_for('auth.logout') }}">Sair</a>
-                {% endif %}
-            </div>
-            <div class="theme-switch-wrapper">
-                <i data-feather="sun"></i>
-                <label class="theme-switch" for="theme-switch-checkbox">
-                    <input type="checkbox" id="theme-switch-checkbox" />
-                    <div class="slider round"></div>
-                </label>
-                <i data-feather="moon"></i>
-            </div>
-        </aside>
-        <main class="content">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="flash-messages-container">
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
-            <h2 class="page-title">Pasta: {{ folder.name }}</h2>
-            <div class="file-grid">
-                {% for file in files %}
-                    <a href="#" class="file-card" onclick="openFileViewer('{{ url_for('views.uploaded_file', filename=file.filename) }}', '{{ file.original_filename }}')">
-                        <i data-feather="file-text" class="file-icon"></i>
-                        <span>{{ file.original_filename }}</span>
-                    </a>
-                {% endfor %}
-                <div class="file-card upload-card">
-                    <form action="{{ url_for('views.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data" class="upload-form">
-                        <label for="file-upload" class="upload-label">
-                            <i data-feather="upload-cloud"></i>
-                            <span>Enviar Arquivo</span>
-                        </label>
-                        <input id="file-upload" name="file" type="file" onchange="this.form.submit()">
-                    </form>
-                </div>
-            </div>
-            {% if not files %}
-                <p class="empty-message">Nenhum arquivo aqui. Comece enviando um!</p>
-            {% endif %}
-        </main>
+    {% endfor %}
+    <div class="file-card upload-card">
+        </div>
+</div>
+{% if not files %}
+    <p class="empty-message">Nenhum ficheiro aqui. Comece enviando um!</p>
+{% endif %}
+
+<div id="delete-file-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Excluir Ficheiro</h2>
+        <p>Você tem certeza que deseja excluir este ficheiro? Esta ação é irreversível.</p>
+        <form id="delete-file-form" action="" method="post">
+            <button type="submit" class="profile-btn delete">Sim, excluir</button>
+        </form>
     </div>
-    <script src="{{ url_for('static', filename='js/file_viewer.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script>
-        feather.replace();
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/file_viewer.js') }}"></script>
+<script src="{{ url_for('static', filename='js/folders.js') }}"></script>
+{% endblock %}

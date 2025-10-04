@@ -668,3 +668,48 @@ input:checked + .slider { background-color: var(--primary-color); }
 input:checked + .slider:before { transform: translateX(24px); }
 .slider.round { border-radius: 34px; }
 .slider.round:before { border-radius: 50%; }
+
+/* ==========================================================================
+   8. ESTILOS PARA AÇÕES EM FICHEIROS
+   ========================================================================== */
+
+/* Ajusta o cartão do ficheiro para permitir posicionamento absoluto do botão */
+.file-card {
+    position: relative;
+}
+
+/* Container para os botões de ação dentro do cartão do ficheiro */
+.file-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2; /* Garante que fica por cima do link */
+    display: flex;
+    gap: 5px;
+}
+
+/* Estilo do botão de ação individual para ficheiros */
+.action-btn-file {
+    background: rgba(0, 0, 0, 0.05); /* Fundo subtil */
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-color-light); /* Cor do ícone */
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Efeito ao passar o rato por cima (hover) */
+.action-btn-file:hover {
+    background-color: var(--danger-color); /* Fica vermelho */
+    color: #fff; /* Ícone fica branco */
+}
+
+/* Ajuste para o modo escuro */
+body.dark-mode .action-btn-file {
+    background: rgba(255, 255, 255, 0.1);
+}

@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from .models import User, Subject, Folder, File
-from . import db
+from .extensions import db
 
 # Cria o Blueprint de views
 views_bp = Blueprint('views', __name__)
@@ -176,6 +176,33 @@ def delete_folder(folder_id):
     db.session.commit()
     flash('Pasta e seus arquivos foram excluídos.', 'success')
     return redirect(url_for('views.pastas_page', subject_id=subject_id))
+
+@views_bp.route('/delete_file/<int:file_id>', methods=['POST'])
+@login_required
+def delete_file(file_id):
+    file_to_delete = File.query.get_or_404(file_id)
+    folder = file_to_delete.folder
+    subject = folder.subject
+
+    # Verifica se o ficheiro pertence ao utilizador logado
+    if subject.user_id != session['user_id']:
+        flash('Você não tem permissão para apagar este ficheiro.', 'error')
+        return redirect(url_for('views.home_page'))
+
+    try:
+        # Apaga o ficheiro físico
+        os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], file_to_delete.filename))
+        
+        # Apaga o registo do banco de dados
+        db.session.delete(file_to_delete)
+        db.session.commit()
+        flash('Ficheiro apagado com sucesso!', 'success')
+    except OSError as e:
+        db.session.rollback()
+        print(f"Erro ao apagar o ficheiro físico: {e}")
+        flash('Erro ao apagar o ficheiro do servidor.', 'error')
+    
+    return redirect(url_for('views.folders', folder_id=folder.id))
 
 
 # --- ROTAS DE PERFIL ---

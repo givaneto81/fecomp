@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educa AI - Chat</title>
+    <title>Educa AI - {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    {% block head_scripts %}{% endblock %}
 </head>
 <body>
     <div class="main-container">
@@ -19,7 +19,7 @@
             <nav class="nav-menu">
                 <ul>
                     <li><a href="{{ url_for('views.home_page') }}"><i data-feather="home"></i>Home</a></li>
-                    <li><a href="#" onclick="alert('Por favor, selecione uma matéria primeiro na página Home.');"><i data-feather="folder"></i>Pastas</a></li>
+                    <li><a href="#" onclick="alert('Funcionalidade em desenvolvimento. Selecione uma matéria na Home.');"><i data-feather="folder"></i>Pastas</a></li>
                     <li><a href="{{ url_for('views.chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
                     <li><a href="{{ url_for('views.perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
                 </ul>
@@ -51,28 +51,15 @@
                     </div>
                 {% endif %}
             {% endwith %}
-            {% block content %}
-            <div class="chat-container">
-                <div class="chat-header">
-                    <h2>Chat com a IA</h2>
-                </div>
-                <div class="chat-messages">
-                </div>
-                <div class="chat-input-container">
-                    <input type="text" class="chat-input" placeholder="Digite sua dúvida...">
-                    <button class="chat-send-btn">
-                        <i data-feather="send"></i>
-                    </button>
-                </div>
-            </div>
-            {% endblock %}
+            
+            {% block content %}{% endblock %}
         </main>
     </div>
 
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-<script>
-  feather.replace();
-</script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script>
+      feather.replace();
+    </script>
+    {% block page_scripts %}{% endblock %}
 </body>
 </html>

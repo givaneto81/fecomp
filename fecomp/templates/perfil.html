@@ -50,6 +50,7 @@
                     </div>
                 {% endif %}
             {% endwith %}
+            {% block content %}
             <div class="profile-container">
                 <img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Foto de Perfil" class="profile-pic">
                 <h2 class="profile-name">Nome: {{ user.name }}</h2>
@@ -60,46 +61,49 @@
                     <button id="delete-account-btn" class="profile-btn delete">Excluir Conta</button>
                 </div>
             </div>
+
+            <div id="edit-name-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Editar Nome</h2>
+                    <form action="{{ url_for('views.update_profile') }}" method="post" class="modal-form">
+                        <label for="new_name">Novo Nome:</label>
+                        <input type="text" id="new_name" name="new_name" value="{{ user.name }}" required>
+                        <button type="submit" class="btn-entrar">Salvar</button>
+                    </form>
+                </div>
+            </div>
+            <div id="change-password-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Alterar Senha</h2>
+                    <form action="{{ url_for('views.change_password') }}" method="post" class="modal-form">
+                        <label for="current_password">Senha Atual:</label>
+                        <input type="password" id="current_password" name="current_password" required>
+                        <label for="new_password">Nova Senha:</label>
+                        <input type="password" id="new_password" name="new_password" required>
+                        <button type="submit" class="btn-entrar">Alterar</button>
+                    </form>
+                </div>
+            </div>
+            <div id="delete-account-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Excluir Conta</h2>
+                    <p>Você tem certeza? Esta ação é irreversível e todos os seus dados serão perdidos.</p>
+                    <form action="{{ url_for('views.delete_account') }}" method="post">
+                        <button type="submit" class="profile-btn delete">Sim, excluir minha conta</button>
+                    </form>
+                </div>
+            </div>
+            {% endblock %}
         </main>
     </div>
 
-    <div id="edit-name-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Editar Nome</h2>
-            <form action="{{ url_for('views.update_profile') }}" method="post" class="modal-form">
-                <label for="new_name">Novo Nome:</label>
-                <input type="text" id="new_name" name="new_name" value="{{ user.name }}" required>
-                <button type="submit" class="btn-entrar">Salvar</button>
-            </form>
-        </div>
-    </div>
-    <div id="change-password-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Alterar Senha</h2>
-            <form action="{{ url_for('views.change_password') }}" method="post" class="modal-form">
-                <label for="current_password">Senha Atual:</label>
-                <input type="password" id="current_password" name="current_password" required>
-                <label for="new_password">Nova Senha:</label>
-                <input type="password" id="new_password" name="new_password" required>
-                <button type="submit" class="btn-entrar">Alterar</button>
-            </form>
-        </div>
-    </div>
-    <div id="delete-account-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Excluir Conta</h2>
-            <p>Você tem certeza? Esta ação é irreversível e todos os seus dados serão perdidos.</p>
-            <form action="{{ url_for('views.delete_account') }}" method="post">
-                <button type="submit" class="profile-btn delete">Sim, excluir minha conta</button>
-            </form>
-        </div>
-    </div>
-
+    {% block page_scripts %}
     <script src="{{ url_for('static', filename='js/perfil.js') }}"></script>
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    {% endblock %}
     <script>
       feather.replace();
     </script>
