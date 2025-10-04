@@ -34,8 +34,11 @@ Siga estes passos para ter a aplicação a funcionar na sua máquina.
      ```
 
 **4. Configure as Variáveis de Ambiente**
-   - Na pasta do projeto, vai encontrar um ficheiro chamado `.env.example`.
-   - Faça uma cópia deste ficheiro e renomeie a cópia para `.env`.
+   - Na pasta do projeto, vai encontrar um ficheiro chamado `.env.`.
+   - Nele contém informações importantíssimas, e cruciais para o bom desenrolar do projeto.
+   - É importante que ao entrarem, vocês usem a senha original do servidor, que em vez de `neto0203` é `fecomp2025`.
+      - Ou seja, em `.env` mudem `SQLALCHEMY_DATABASE_URI="postgresql+pg8000://postgres:neto0203@localhost/educa_ai_db"` para `SQLALCHEMY_DATABASE_URI="postgresql+pg8000://postgres:fecomp2025@localhost/educa_ai_db"` .
+
    - **(Opcional, mas recomendado)** Se quiser testar o chatbot, abra o ficheiro `.env` e cole a sua chave da API do Google Gemini no campo `GEMINI_API_KEY`. Se não o fizer, o resto da aplicação funcionará, mas o chat não.
 
 **5. Execute a Aplicação!**
