@@ -1,43 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educa AI - Criar Conta</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body class="login-page">
-    <div class="login-container">
-        <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
-        <h1 class="logo">Crie sua Conta</h1>
-        <p class="subtitle">Seu repositório acadêmico</p>
-        
-        <form class="login-form" action="{{ url_for('auth.register_page') }}" method="post">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash-message {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <label for="name">Nome:</label>
-            <input type="text" id="name" name="name" placeholder="Digite seu nome completo" required>
+{% extends 'logbase.html' %}
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Digite seu email" required>
-            
-            <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
-            
-            <button type="submit" class="btn-entrar">Cadastrar</button>
-            
-            <div class="links">
-                <a href="{{ url_for('auth.login_page') }}" class="link-create">Já tem uma conta? Entre</a>
-            </div>
-        </form>
-    </div>
-</body>
-</html>
+{% block title %}Criar Conta{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
+    <h1 class="logo">Crie sua Conta</h1>
+    <p class="subtitle">Seu repositório acadêmico</p>
+    
+    <form class="login-form" action="{{ url_for('auth.register_page') }}" method="post">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" placeholder="Digite seu nome completo" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+        
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" placeholder="Crie uma senha" required>
+        
+        <button type="submit" class="btn-entrar">Cadastrar</button>
+        
+        <div class="links">
+            <a href="{{ url_for('auth.login_page') }}" class="link-create">Já tem uma conta? Entre</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

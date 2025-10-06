@@ -1,80 +1,65 @@
-// fecomp/static/js/pastas.js (VERSÃO CORRIGIDA E LIMPA)
 
-function openRenameModal(folderId, currentName) {
-    const modal = document.getElementById('rename-modal');
-    const form = document.getElementById('rename-form');
-    const input = document.getElementById('new_folder_name');
-    form.action = `/rename_folder/${folderId}`;
-    input.value = currentName;
-    modal.style.display = 'block';
-}
-
-function openColorModal(folderId, currentColor) {
-    const modal = document.getElementById('color-modal');
-    const form = document.getElementById('color-form');
-    const hexInput = document.getElementById('new_color_hex');
-    const pickerInput = document.getElementById('new_color_picker');
-    
-    form.action = `/update_folder_color/${folderId}`;
-    
-    // Garante que o valor inicial esteja correto
-    const cleanColor = currentColor.startsWith('#') ? currentColor : '#' + currentColor;
-    hexInput.value = cleanColor.slice(1);
-    pickerInput.value = cleanColor;
-
-    // Limpa eventos antigos para evitar múltiplos gatilhos
-    const newHexInput = hexInput.cloneNode(true);
-    hexInput.parentNode.replaceChild(newHexInput, hexInput);
-    const newPickerInput = pickerInput.cloneNode(true);
-    pickerInput.parentNode.replaceChild(newPickerInput, pickerInput);
-
-    // Sincroniza os dois inputs
-    newHexInput.addEventListener('input', () => newPickerInput.value = '#' + newHexInput.value);
-    newPickerInput.addEventListener('input', () => newHexInput.value = newPickerInput.value.slice(1));
-
-    modal.style.display = 'block';
-}
-
-function openDeleteModal(folderId) {
-    const modal = document.getElementById('delete-modal');
-    const form = document.getElementById('delete-form');
-    form.action = `/delete_folder/${folderId}`;
-    modal.style.display = 'block';
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-}
-
-// Event Listeners para os botões e modais
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.rename-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            openRenameModal(btn.dataset.folderId, btn.dataset.folderName);
-        });
-    });
+    // Mapeamento dos modais para evitar repetição
+    const modals = {
+        rename: document.getElementById('rename-modal'),
+        color: document.getElementById('color-modal'),
+        delete: document.getElementById('delete-modal')
+    };
 
-    document.querySelectorAll('.color-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            openColorModal(btn.dataset.folderId, btn.dataset.folderColor);
-        });
-    });
+    // Delegação de eventos no contêiner principal para funcionar com elementos futuros
+    document.querySelector('.file-grid').addEventListener('click', (event) => {
+        const renameBtn = event.target.closest('.rename-btn');
+        const colorBtn = event.target.closest('.color-btn');
+        const deleteBtn = event.target.closest('.delete-btn');
 
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            openDeleteModal(btn.dataset.folderId);
-        });
-    });
+        if (renameBtn) {
+            const modal = modals.rename;
+            const form = modal.querySelector('#rename-form');
+            const input = modal.querySelector('#new_folder_name');
+            form.action = `/rename_folder/${renameBtn.dataset.folderId}`;
+            input.value = renameBtn.dataset.folderName;
+            modal.classList.add('active');
+        }
 
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            e.target.style.display = 'none';
+        if (colorBtn) {
+            const modal = modals.color;
+            const form = modal.querySelector('#color-form');
+            const hexInput = modal.querySelector('#new_color_hex');
+            const pickerInput = modal.querySelector('#new_color_picker');
+            const currentColor = colorBtn.dataset.folderColor;
+
+            form.action = `/update_folder_color/${colorBtn.dataset.folderId}`;
+            hexInput.value = currentColor.slice(1);
+            pickerInput.value = currentColor;
+            
+            // Sincroniza os inputs de cor
+            hexInput.oninput = () => pickerInput.value = '#' + hexInput.value;
+            pickerInput.oninput = () => hexInput.value = pickerInput.value.slice(1);
+
+            modal.classList.add('active');
+        }
+
+        if (deleteBtn) {
+            const modal = modals.delete;
+            const form = modal.querySelector('#delete-form');
+            form.action = `/delete_folder/${deleteBtn.dataset.folderId}`;
+            modal.classList.add('active');
         }
     });
 
-    document.querySelectorAll('.modal .close-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.closest('.modal').style.display = 'none';
+    // Lógica para fechar QUALQUER modal
+    document.querySelectorAll('.modal').forEach(modal => {
+        // Pelo botão de fechar (X)
+        modal.querySelector('.close-btn')?.addEventListener('click', () => {
+            modal.classList.remove('active');
         });
+    });
+
+    // Clicando fora do modal (no fundo)
+    window.addEventListener('click', (event) => {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('active');
+        }
     });
 });

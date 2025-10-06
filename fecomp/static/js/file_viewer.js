@@ -29,7 +29,7 @@ function openFileViewer(filePath, fileName) {
         container.innerHTML = `<p>Visualização não suportada.</p><a href="${filePath}" class="profile-btn" download>Baixar ${fileName}</a>`;
     }
 
-    modal.style.display = 'block';
+    modal.classList.add('active');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (modal && closeBtn) {
         closeBtn.onclick = () => {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
             // Para o vídeo se o modal for fechado
             const video = modal.querySelector('video');
             if (video) video.pause();
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.onclick = (event) => {
         if (event.target == modal) {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
             const video = modal.querySelector('video');
             if (video) video.pause();
         }

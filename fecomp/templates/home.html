@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="form-container">
-    <form action="{{ url_for('views.add_subject') }}" method="post" class="add-subject-form">
+    <form id="add-subject-form" class="add-subject-form">
         <h3>Criar Nova Matéria</h3>
         <input type="text" name="subject_name" placeholder="Nome da Matéria" required>
         <button type="submit">Adicionar</button>
@@ -23,14 +23,36 @@
         </div>
     {% endfor %}
 </div>
- {% if not subjects %}
+{% if not subjects %}
     <p class="empty-message">Você ainda não criou nenhuma matéria. Adicione uma acima!</p>
 {% endif %}
 
-<div id="delete-subject-modal" class="modal">
-    </div>
 <div id="color-subject-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Alterar Cor da Matéria</h2>
+        <form id="color-subject-form" action="" method="post" class="modal-form">
+            <label for="new_subject_color_hex">Nova cor:</label>
+            <div class="color-input-wrapper">
+                <span>#</span>
+                <input type="text" id="new_subject_color_hex" name="new_color_hex" maxlength="6" pattern="[a-fA-F0-9]{6}">
+                <input type="color" id="new_subject_color_picker" name="new_color">
+            </div>
+            <button type="submit" class="btn-entrar">Salvar</button>
+        </form>
     </div>
+</div>
+
+<div id="delete-subject-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Excluir Matéria</h2>
+        <p>Você tem certeza? Todas as pastas e arquivos dentro desta matéria também serão excluídos. Esta ação é irreversível.</p>
+        <form id="delete-subject-form" action="" method="post">
+            <button type="submit" class="profile-btn delete">Sim, excluir esta matéria</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block page_scripts %}

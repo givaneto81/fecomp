@@ -582,7 +582,7 @@ body.dark-mode .message.receiver strong { color: #f5f6f7; }
    6. MODAIS (JANELAS POP-UP)
    ========================================================================== */
 .modal {
-    display: none;
+    display: none; /* começa escondido por padrão */
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -591,18 +591,39 @@ body.dark-mode .message.receiver strong { color: #f5f6f7; }
     height: 100%;
     overflow: auto;
     background-color: rgba(0,0,0,0.5);
-    animation: fadeIn 0.3s;
+    /* Transição para o fade in/out */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
+
+.modal.active {
+    display: flex; /* Mude para flex para centralizar o conteúdo */
+    align-items: center;
+    justify-content: center;
+    /* Ativa a transição de fade in */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
 .modal-content {
     background-color: var(--content-bg-color);
-    margin: 15% auto;
     padding: 30px;
     border-radius: 10px;
     width: 80%;
     max-width: 500px;
     position: relative;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    /* Animação de "subir" */
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
 }
+
+.modal.active .modal-content {
+    transform: translateY(0);
+}
+
 .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
 .close-btn:hover, .close-btn:focus { color: var(--text-color); text-decoration: none; }
 .modal-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
@@ -612,8 +633,6 @@ body.dark-mode .message.receiver strong { color: #f5f6f7; }
 .color-input-wrapper span { font-weight: bold; color: var(--text-color-light); }
 .color-input-wrapper input[type="text"] { border: none; outline: none; padding: 12px 5px; flex-grow: 1; }
 .color-input-wrapper input[type="color"] { border: none; background: transparent; width: 40px; height: 40px; padding: 0; cursor: pointer; }
-
-@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
 
 /* Modal de Visualização de Arquivo */
 .file-viewer-content { padding: 15px; height: 80vh; max-width: 900px; display: flex; flex-direction: column; }
@@ -712,4 +731,69 @@ input:checked + .slider:before { transform: translateX(24px); }
 /* Ajuste para o modo escuro */
 body.dark-mode .action-btn-file {
     background: rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================================
+   9. ANIMAÇÕES E TRANSIÇÕES (GLOW UP)
+   ========================================================================== */
+
+/* Transição suave para os modais */
+.modal {
+    /* ... (código existente do modal) ... */
+    opacity: 0; /* Começa invisível */
+    visibility: hidden; /* Começa escondido */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    /* ... (código existente do modal-content) ... */
+    transform: translateY(-50px); /* Começa um pouco acima */
+    transition: transform 0.3s ease;
+}
+
+.modal.active .modal-content {
+    transform: translateY(0); /* Volta à posição normal */
+}
+
+/* Efeito de "zoom" subtil nos cards ao carregar a página */
+.subject-card, .file-card {
+    /* ... (código existente dos cards) ... */
+    animation: zoomIn 0.5s ease-out forwards;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+/* Animação para a página de login */
+.login-container > * {
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+/* Atraso para cada elemento aparecer em sequência */
+.login-container .logo-image { animation-delay: 0.1s; }
+.login-container .logo { animation-delay: 0.2s; }
+.login-container .subtitle { animation-delay: 0.3s; }
+.login-container .login-form { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

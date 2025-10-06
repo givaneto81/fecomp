@@ -1,31 +1,36 @@
+// fecomp/static/js/perfil.js (VERSÃO CORRIGIDA)
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Mapeia os botões aos seus respectivos modais
     const modalMapping = {
         'edit-name-btn': 'edit-name-modal',
         'change-password-btn': 'change-password-modal',
         'delete-account-btn': 'delete-account-modal'
     };
 
+    // Adiciona o evento de clique para cada botão abrir seu modal
     for (const btnId in modalMapping) {
         const btn = document.getElementById(btnId);
-        const modalId = modalMapping[btnId];
-        const modal = document.getElementById(modalId);
+        const modal = document.getElementById(modalMapping[btnId]);
         
         if (btn && modal) {
             btn.addEventListener('click', () => {
-                modal.style.display = 'block';
+                modal.classList.add('active'); // Abre usando a classe
             });
         }
     }
 
+    // Adiciona o evento de clique para fechar qualquer modal pelo botão 'X'
     document.querySelectorAll('.modal .close-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.target.closest('.modal').style.display = 'none';
+        btn.addEventListener('click', () => {
+            btn.closest('.modal').classList.remove('active'); // Fecha usando a classe
         });
     });
 
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            e.target.style.display = 'none';
+    // Adiciona o evento de clique para fechar qualquer modal clicando no fundo
+    window.addEventListener('click', (event) => {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('active'); // Fecha usando a classe
         }
     });
 });

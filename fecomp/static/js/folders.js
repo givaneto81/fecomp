@@ -6,17 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             const fileId = btn.dataset.fileId;
             form.action = `/delete_file/${fileId}`;
-            modal.style.display = 'block';
+            modal.classList.add('active');
         });
     });
 
     modal.querySelector('.close-btn').addEventListener('click', () => {
-        modal.style.display = 'none';
+        modal.classList.remove('active');
     });
 
     window.addEventListener('click', (event) => {
         if (event.target == modal) {
-            modal.style.display = 'none';
+            modal.classList.remove('active');
         }
     });
 });
