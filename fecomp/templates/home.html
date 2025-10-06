@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Matérias{% endblock %}
 
 {% block content %}
 <div class="form-container">
@@ -13,7 +13,7 @@
 <div class="subject-grid">
     {% for subject in subjects %}
         <div class="subject-card contrast-card" style="background-color: {{ subject.color }};">
-            <a href="{{ url_for('views.pastas_page', subject_id=subject.id) }}" class="subject-link">
+            <a href="{{ url_for('visoes.pastas_page', subject_id=subject.id) }}" class="subject-link">
                 {{ subject.name }}
             </a>
             <div class="subject-actions">

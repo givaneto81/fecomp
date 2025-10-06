@@ -6,8 +6,8 @@ from functools import wraps
 from .models import User, Subject, Folder, File
 from .extensions import db
 
-# Cria o Blueprint de views
-views_bp = Blueprint('views', __name__)
+# Blueprint renomeado para 'visoes'
+views_bp = Blueprint('visoes', __name__)
 
 # --- DECORATOR PARA EXIGIR LOGIN ---
 def login_required(f):
@@ -15,14 +15,20 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             flash('Por favor, faça login para acessar esta página.', 'error')
-            return redirect(url_for('auth.login_page')) # Aponta para a rota de login no blueprint 'auth'
+            return redirect(url_for('autenticacao.pagina_login'))
         return f(*args, **kwargs)
     return decorated_function
 
 # --- ROTAS PRINCIPAIS DO APP ---
-@views_bp.route('/home')
+@views_bp.route('/inicio')
 @login_required
-def home_page():
+def pagina_inicio():
+    # Esta é a nova página de boas-vindas
+    return render_template('inicio.html')
+
+@views_bp.route('/materias')
+@login_required
+def pagina_materias():
     user_subjects = Subject.query.filter_by(user_id=session['user_id']).order_by(Subject.name).all()
     return render_template('home.html', subjects=user_subjects)
 
@@ -33,7 +39,7 @@ def pastas_page(subject_id):
     folders = Folder.query.filter_by(subject_id=subject.id).order_by(Folder.name).all()
     return render_template('pastas.html', subject=subject, folders=folders)
 
-@views_bp.route('/folder/<int:folder_id>')
+@views_bp.route('/pasta/<int:folder_id>')
 @login_required
 def folders(folder_id):
     folder = Folder.query.join(Subject).filter(Subject.user_id == session['user_id'], Folder.id == folder_id).first_or_404()
@@ -42,12 +48,12 @@ def folders(folder_id):
 
 @views_bp.route('/chat')
 @login_required
-def chat_page():
+def pagina_chat():
     return render_template('chat.html')
 
 @views_bp.route('/perfil')
 @login_required
-def perfil_page():
+def pagina_perfil():
     user = User.query.get(session['user_id'])
     return render_template('perfil.html', user=user)
 
@@ -56,15 +62,8 @@ def perfil_page():
 @views_bp.route('/add_subject', methods=['POST'])
 @login_required
 def add_subject():
-    subject_name = request.form.get('subject_name')
-    if subject_name:
-        new_subject = Subject(name=subject_name, user_id=session['user_id'])
-        db.session.add(new_subject)
-        db.session.commit()
-        flash('Matéria adicionada com sucesso!', 'success')
-    else:
-        flash('O nome da matéria não pode estar vazio.', 'error')
-    return redirect(url_for('views.home_page'))
+    # Esta rota agora é usada apenas pela API, mas mantemos por segurança
+    return redirect(url_for('visoes.pagina_materias'))
 
 @views_bp.route('/add_folder/<int:subject_id>', methods=['POST'])
 @login_required
@@ -78,7 +77,7 @@ def add_folder(subject_id):
         flash('Pasta criada com sucesso!', 'success')
     else:
         flash('O nome da pasta não pode estar vazio.', 'error')
-    return redirect(url_for('views.pastas_page', subject_id=subject_id))
+    return redirect(url_for('visoes.pastas_page', subject_id=subject_id))
 
 @views_bp.route('/upload_file/<int:folder_id>', methods=['POST'])
 @login_required
@@ -86,7 +85,7 @@ def upload_file(folder_id):
     folder = Folder.query.join(Subject).filter(Subject.user_id == session['user_id'], Folder.id == folder_id).first_or_404()
     if 'file' not in request.files or request.files['file'].filename == '':
         flash('Nenhum arquivo selecionado.', 'error')
-        return redirect(url_for('views.folders', folder_id=folder_id))
+        return redirect(url_for('visoes.folders', folder_id=folder_id))
     file = request.files['file']
     if file:
         original_filename = secure_filename(file.filename)
@@ -98,7 +97,7 @@ def upload_file(folder_id):
         db.session.add(new_file)
         db.session.commit()
         flash('Arquivo enviado com sucesso!', 'success')
-    return redirect(url_for('views.folders', folder_id=folder_id))
+    return redirect(url_for('visoes.folders', folder_id=folder_id))
 
 # --- ROTA PARA SERVIR ARQUIVOS ---
 @views_bp.route('/uploads/<path:filename>')
@@ -107,7 +106,7 @@ def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=False)
 
 
-# --- ROTAS DE EDIÇÃO ---
+# --- ROTAS DE EDIÇÃO E EXCLUSÃO ---
 @views_bp.route('/update_subject_color/<int:subject_id>', methods=['POST'])
 @login_required
 def update_subject_color(subject_id):
@@ -119,7 +118,7 @@ def update_subject_color(subject_id):
         flash('Cor da matéria atualizada!', 'success')
     else:
         flash('Formato de cor inválido.', 'error')
-    return redirect(url_for('views.home_page'))
+    return redirect(url_for('visoes.pagina_materias'))
 
 @views_bp.route('/delete_subject/<int:subject_id>', methods=['POST'])
 @login_required
@@ -134,7 +133,7 @@ def delete_subject(subject_id):
     db.session.delete(subject)
     db.session.commit()
     flash('Matéria, pastas e arquivos foram excluídos.', 'success')
-    return redirect(url_for('views.home_page'))
+    return redirect(url_for('visoes.pagina_materias'))
 
 @views_bp.route('/rename_folder/<int:folder_id>', methods=['POST'])
 @login_required
@@ -147,7 +146,7 @@ def rename_folder(folder_id):
         flash('Pasta renomeada com sucesso!', 'success')
     else:
         flash('O novo nome não pode ser vazio.', 'error')
-    return redirect(url_for('views.pastas_page', subject_id=folder.subject_id))
+    return redirect(url_for('visoes.pastas_page', subject_id=folder.subject_id))
 
 @views_bp.route('/update_folder_color/<int:folder_id>', methods=['POST'])
 @login_required
@@ -160,49 +159,35 @@ def update_folder_color(folder_id):
         flash('Cor da pasta atualizada!', 'success')
     else:
         flash('Formato de cor inválido.', 'error')
-    return redirect(url_for('views.pastas_page', subject_id=folder.subject_id))
+    return redirect(url_for('visoes.pastas_page', subject_id=folder.subject_id))
 
 @views_bp.route('/delete_folder/<int:folder_id>', methods=['POST'])
 @login_required
 def delete_folder(folder_id):
     folder = Folder.query.join(Subject).filter(Subject.user_id == session['user_id'], Folder.id == folder_id).first_or_404()
-    for file in folder.files:
-        try:
-            os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], file.filename))
-        except OSError as e:
-            print(f"Erro ao deletar o arquivo {file.filename}: {e}")
     subject_id = folder.subject_id
     db.session.delete(folder)
     db.session.commit()
     flash('Pasta e seus arquivos foram excluídos.', 'success')
-    return redirect(url_for('views.pastas_page', subject_id=subject_id))
+    return redirect(url_for('visoes.pastas_page', subject_id=subject_id))
 
 @views_bp.route('/delete_file/<int:file_id>', methods=['POST'])
 @login_required
 def delete_file(file_id):
     file_to_delete = File.query.get_or_404(file_id)
     folder = file_to_delete.folder
-    subject = folder.subject
-
-    # Verifica se o ficheiro pertence ao utilizador logado
-    if subject.user_id != session['user_id']:
+    if folder.subject.user_id != session['user_id']:
         flash('Você não tem permissão para apagar este ficheiro.', 'error')
-        return redirect(url_for('views.home_page'))
-
+        return redirect(url_for('visoes.pagina_materias'))
     try:
-        # Apaga o ficheiro físico
         os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], file_to_delete.filename))
-        
-        # Apaga o registo do banco de dados
         db.session.delete(file_to_delete)
         db.session.commit()
         flash('Ficheiro apagado com sucesso!', 'success')
-    except OSError as e:
+    except OSError:
         db.session.rollback()
-        print(f"Erro ao apagar o ficheiro físico: {e}")
         flash('Erro ao apagar o ficheiro do servidor.', 'error')
-    
-    return redirect(url_for('views.folders', folder_id=folder.id))
+    return redirect(url_for('visoes.folders', folder_id=folder.id))
 
 
 # --- ROTAS DE PERFIL ---
@@ -218,7 +203,7 @@ def update_profile():
         flash('Nome atualizado com sucesso!', 'success')
     else:
         flash('O nome não pode ficar em branco.', 'error')
-    return redirect(url_for('views.perfil_page'))
+    return redirect(url_for('visoes.pagina_perfil'))
 
 @views_bp.route('/change_password', methods=['POST'])
 @login_required
@@ -235,7 +220,7 @@ def change_password():
             flash('A nova senha não pode estar em branco.', 'error')
     else:
         flash('A senha atual está incorreta.', 'error')
-    return redirect(url_for('views.perfil_page'))
+    return redirect(url_for('visoes.pagina_perfil'))
 
 @views_bp.route('/delete_account', methods=['POST'])
 @login_required
@@ -246,8 +231,6 @@ def delete_account():
         db.session.commit()
         session.clear()
         flash('Sua conta foi excluída com sucesso.', 'success')
-        return redirect(url_for('auth.login_page'))
+        return redirect(url_for('autenticacao.pagina_login'))
     flash('Não foi possível excluir a conta.', 'error')
-    return redirect(url_for('views.perfil_page'))
-
-# nota: garanta que todas as refs url_for apontem para o blueprint correto, por exemplo, 'views.home_page', 'auth.login_page', etc.
+    return redirect(url_for('visoes.pagina_perfil'))

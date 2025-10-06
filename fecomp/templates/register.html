@@ -8,7 +8,7 @@
     <h1 class="logo">Crie sua Conta</h1>
     <p class="subtitle">Seu repositório acadêmico</p>
     
-    <form class="login-form" action="{{ url_for('auth.register_page') }}" method="post">
+    <form class="login-form" action="{{ url_for('autenticacao.pagina_registo') }}" method="post">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -28,7 +28,7 @@
         <button type="submit" class="btn-entrar">Cadastrar</button>
         
         <div class="links">
-            <a href="{{ url_for('auth.login_page') }}" class="link-create">Já tem uma conta? Entre</a>
+            <a href="{{ url_for('autenticacao.pagina_login') }}" class="link-create">Já tem uma conta? Entre</a>
         </div>
     </form>
 </div>

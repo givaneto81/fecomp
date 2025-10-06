@@ -5,7 +5,7 @@
 {% block content %}
 <h2 class="page-title">Matéria: {{ subject.name }}</h2>
 <div class="form-container">
-    <form action="{{ url_for('views.add_folder', subject_id=subject.id) }}" method="post" class="add-subject-form">
+    <form action="{{ url_for('visoes.add_folder', subject_id=subject.id) }}" method="post" class="add-subject-form">
         <h3>Criar Nova Pasta</h3>
         <input type="text" name="folder_name" placeholder="Nome da Pasta" required>
         <button type="submit">Adicionar</button>
@@ -14,7 +14,7 @@
 <div class="file-grid">
     {% for folder in folders %}
         <div class="file-card folder contrast-card" style="background-color: {{ folder.color }};">
-            <a href="{{ url_for('views.folders', folder_id=folder.id) }}" class="folder-link">
+            <a href="{{ url_for('visoes.folders', folder_id=folder.id) }}" class="folder-link">
                 <i data-feather="folder" class="file-icon"></i>
                 <span>{{ folder.name }}</span>
             </a>

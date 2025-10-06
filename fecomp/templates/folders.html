@@ -7,7 +7,7 @@
 <div class="file-grid">
     {% for file in files %}
     <div class="file-card">
-        <a href="{{ url_for('views.uploaded_file', filename=file.filename) }}" target="_blank" class="file-link">
+        <a href="{{ url_for('visoes.uploaded_file', filename=file.filename) }}" target="_blank" class="file-link">
             <i data-feather="file-text" class="file-icon"></i>
             <span>{{ file.original_filename }}</span>
         </a>
@@ -16,9 +16,9 @@
         </div>
     </div>
     {% endfor %}
-    
+        
     <div class="file-card upload-card">
-        <form class="upload-form" action="{{ url_for('views.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
+        <form class="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
             <label for="file-upload" class="upload-label">
                 <i data-feather="upload-cloud"></i>
                 <span>Enviar Arquivo</span>

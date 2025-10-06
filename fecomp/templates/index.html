@@ -8,7 +8,7 @@
     <h1 class="logo">Educa AI</h1>
     <p class="subtitle">Seu repositório acadêmico</p>
     
-    <form class="login-form" action="{{ url_for('auth.login') }}" method="post">
+    <form class="login-form" action="{{ url_for('autenticacao.login') }}" method="post">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" placeholder="Digite seu email">
         
@@ -29,7 +29,7 @@
         
         <div class="links">
             <a href="#" class="link-forgot">Esqueceu a Senha?</a>
-            <a href="{{ url_for('auth.register_page') }}" class="link-create">Criar conta</a>
+            <a href="{{ url_for('autenticacao.pagina_registo') }}" class="link-create">Criar conta</a>
         </div>
     </form>
 </div>

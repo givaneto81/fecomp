@@ -19,16 +19,16 @@
             <h1 class="logo-sidebar">EDUCA AI</h1>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="{{ url_for('views.home_page') }}"><i data-feather="home"></i>Home</a></li>
-                    <li><a href="#" onclick="alert('Funcionalidade em desenvolvimento. Selecione uma matéria na Home.');"><i data-feather="folder"></i>Pastas</a></li>
-                    <li><a href="{{ url_for('views.chat_page') }}"><i data-feather="message-circle"></i>Chat</a></li>
-                    <li><a href="{{ url_for('views.perfil_page') }}"><i data-feather="user"></i>Perfil</a></li>
+                    <li><a href="{{ url_for('visoes.pagina_inicio') }}"><i data-feather="home"></i>Início</a></li>
+                    <li><a href="{{ url_for('visoes.pagina_materias') }}"><i data-feather="book-open"></i>Matérias</a></li>
+                    <li><a href="{{ url_for('visoes.pagina_chat') }}"><i data-feather="message-circle"></i>Chat</a></li>
+                    <li><a href="{{ url_for('visoes.pagina_perfil') }}"><i data-feather="user"></i>Perfil</a></li>
                 </ul>
             </nav>
             <div class="user-profile">
                 {% if session['user_name'] %}
                     <p>Olá, {{ session['user_name'] }}!</p>
-                    <a href="{{ url_for('auth.logout') }}">Sair</a>
+                    <a href="{{ url_for('autenticacao.logout') }}">Sair</a>
                 {% endif %}
             </div>
             <div class="theme-switch-wrapper">

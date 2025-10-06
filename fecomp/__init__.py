@@ -10,19 +10,22 @@ def create_app():
 
     db.init_app(app)
 
-
     if app.config['GEMINI_API_KEY']:
         genai.configure(api_key=app.config['GEMINI_API_KEY'])
     else:
         print("AVISO: Chave da API do Gemini não encontrada.")
 
-    from . import auth
-    from . import views
-    from . import api
+    # Importação dos blueprints com os nomes em português
+    from .autenticacao import auth_bp
+    from .visoes import views_bp
+    from .api import api_bp
+    from .tutorial import tutorial_bp # NOVO BLUEPRINT
 
-    app.register_blueprint(auth.auth_bp)
-    app.register_blueprint(views.views_bp)
-    app.register_blueprint(api.api_bp, url_prefix='/api')
+    # Registo dos blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(views_bp)
+    app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(tutorial_bp) # NOVO BLUEPRINT
 
     with app.app_context():
         db.create_all()

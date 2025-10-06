@@ -8,6 +8,8 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     subjects = db.relationship('Subject', backref='user', lazy=True, cascade="all, delete-orphan")
+    
+    tutorial_concluido = db.Column(db.Boolean, default=False, nullable=False)
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
