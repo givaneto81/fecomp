@@ -1,11 +1,8 @@
 import os
 import google.generativeai as genai
 from flask import Flask
-from flask_wtf.csrf import CSRFProtect
 from .config import Config
-from .extensions import db 
-
-csrf = CSRFProtect() 
+from .extensions import db, csrf
 
 def create_app():
     app = Flask(__name__)

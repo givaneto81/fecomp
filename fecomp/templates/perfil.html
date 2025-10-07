@@ -19,19 +19,20 @@
         <span class="close-btn">&times;</span>
         <h2>Editar Nome</h2>
         <form action="{{ url_for('visoes.update_profile') }}" method="post" class="modal-form">
-            {{ csrf_token() }}
+            {{ form.hidden_tag() }} {# <--- CORRIGIDO #}
             <label for="new_name">Novo Nome:</label>
             <input type="text" id="new_name" name="new_name" value="{{ user.name }}" required>
             <button type="submit" class="btn-entrar">Salvar</button>
         </form>
     </div>
 </div>
+
 <div id="change-password-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
         <h2>Alterar Senha</h2>
         <form action="{{ url_for('visoes.change_password') }}" method="post" class="modal-form">
-            {{ csrf_token() }}
+            {{ form.hidden_tag() }} {# <--- CORRIGIDO #}
             <label for="current_password">Senha Atual:</label>
             <input type="password" id="current_password" name="current_password" required>
             <label for="new_password">Nova Senha:</label>
@@ -40,13 +41,14 @@
         </form>
     </div>
 </div>
+
 <div id="delete-account-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
         <h2>Excluir Conta</h2>
         <p>Você tem certeza? Esta ação é irreversível e todos os seus dados serão perdidos.</p>
         <form action="{{ url_for('visoes.delete_account') }}" method="post">
-            {{ csrf_token() }}
+            {{ form.hidden_tag() }} {# <--- CORRIGIDO #}
             <button type="submit" class="profile-btn delete">Sim, excluir minha conta</button>
         </form>
     </div>

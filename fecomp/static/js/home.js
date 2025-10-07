@@ -1,9 +1,6 @@
-// fecomp/static/js/home.js (VERSÃO CORRIGIDA E UNIFICADA)
-
 document.addEventListener('DOMContentLoaded', () => {
     const addSubjectForm = document.getElementById('add-subject-form');
 
-    // --- Lógica para Adicionar Matéria com AJAX ---
     if (addSubjectForm) {
         addSubjectForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -80,6 +77,11 @@ function createNewSubjectCard(subject) {
     const grid = document.querySelector('.subject-grid');
     if (!grid) return;
 
+    const emptyMessage = document.querySelector('.empty-message');
+    if (emptyMessage) {
+        emptyMessage.remove();
+    }
+
     const cardDiv = document.createElement('div');
     cardDiv.className = 'subject-card contrast-card';
     cardDiv.style.backgroundColor = subject.color;
@@ -92,11 +94,9 @@ function createNewSubjectCard(subject) {
         </div>
     `;
 
-    document.querySelector('.empty-message')?.remove();
     grid.appendChild(cardDiv);
     feather.replace();
 
-    // Re-aplica a lógica de contraste de cor
     if (typeof applyContrastToCards === 'function') {
         applyContrastToCards();
     }

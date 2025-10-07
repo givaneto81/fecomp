@@ -6,6 +6,7 @@
 <h2 class="page-title">Matéria: {{ subject.name }}</h2>
 <div class="form-container">
     <form action="{{ url_for('visoes.add_folder', subject_id=subject.id) }}" method="post" class="add-subject-form">
+        {{ form.hidden_tag() }}
         <h3>Criar Nova Pasta</h3>
         <input type="text" name="folder_name" placeholder="Nome da Pasta" required>
         <button type="submit">Adicionar</button>
@@ -35,6 +36,7 @@
         <span class="close-btn">&times;</span>
         <h2>Renomear Pasta</h2>
         <form id="rename-form" action="" method="post" class="modal-form">
+            {{ form.hidden_tag() }}
             <label for="new_folder_name">Novo nome:</label>
             <input type="text" id="new_folder_name" name="new_folder_name" required>
             <button type="submit" class="btn-entrar">Salvar</button>
@@ -46,6 +48,7 @@
         <span class="close-btn">&times;</span>
         <h2>Alterar Cor da Pasta</h2>
         <form id="color-form" action="" method="post" class="modal-form">
+            {{ form.hidden_tag() }}
             <label for="new_color_hex">Nova cor:</label>
             <div class="color-input-wrapper">
                 <span>#</span>
@@ -61,7 +64,8 @@
         <span class="close-btn">&times;</span>
         <h2>Excluir Pasta</h2>
         <p>Você tem certeza? Todos os arquivos dentro desta pasta também serão excluídos. Esta ação é irreversível.</p>
-        <form id="delete-form" action="" method="post">
+        <form id="delete-form" action="" method="post" class="modal-form">
+            {{ form.hidden_tag() }}
             <button type="submit" class="profile-btn delete">Sim, excluir esta pasta</button>
         </form>
     </div>
@@ -71,4 +75,4 @@
 {% block page_scripts %}
 <script src="{{ url_for('static', filename='js/contraste.js') }}"></script>
 <script src="{{ url_for('static', filename='js/pastas.js') }}"></script>
-{% endblock %}
+{% endblock %}      

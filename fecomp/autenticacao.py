@@ -2,17 +2,18 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
 from .extensions import db
-
-# Blueprint renomeado para 'autenticacao'
+from .forms import EmptyForm 
 auth_bp = Blueprint('autenticacao', __name__)
 
 @auth_bp.route('/')
 def pagina_login():
-    return render_template('index.html')
+    form = EmptyForm()
+    return render_template('index.html', form=form)
 
 @auth_bp.route('/registo', methods=['GET', 'POST'])
 def pagina_registo():
-    if request.method == 'POST':
+    form = EmptyForm()
+    if form.validate_on_submit():
         nome = request.form.get('name')
         email = request.form.get('email')
         senha = request.form.get('senha')
@@ -28,30 +29,32 @@ def pagina_registo():
         db.session.add(novo_utilizador)
         db.session.commit()
         
-        flash('Registo realizado com sucesso! Faça o login.', 'success')
+        flash('Cadastro realizado com sucesso! Faça o login.', 'success')
         return redirect(url_for('autenticacao.pagina_login'))
-    return render_template('register.html')
+    return render_template('register.html', form=form)
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    email = request.form.get('email')
-    senha = request.form.get('senha')
-    utilizador = User.query.filter_by(email=email).first()
+    form = EmptyForm()
+    if form.validate_on_submit():
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        utilizador = User.query.filter_by(email=email).first()
 
-    if utilizador and check_password_hash(utilizador.password_hash, senha):
-        session.clear()
-        session['user_id'] = utilizador.id
-        session['user_name'] = utilizador.name
-        
-        # TAREFA 4: REDIRECIONAMENTO APÓS LOGIN
-        # Se o utilizador ainda não concluiu o tutorial, é redirecionado para lá.
-        if not utilizador.tutorial_concluido:
-            return redirect(url_for('tutorial.pagina_tutorial'))
-        
-        # Caso contrário, vai para a página inicial.
-        return redirect(url_for('visoes.pagina_inicio'))
+        if utilizador and check_password_hash(utilizador.password_hash, senha):
+            session.clear()
+            session['user_id'] = utilizador.id
+            session['user_name'] = utilizador.name
+            
+            if not utilizador.tutorial_concluido:
+                return redirect(url_for('tutorial.pagina_tutorial'))
+            
+            return redirect(url_for('visoes.pagina_inicio'))
+        else:
+            flash('Email ou senha incorretos.', 'error')
+            return redirect(url_for('autenticacao.pagina_login'))
     else:
-        flash('Email ou senha incorretos.', 'error')
+        flash('Sessão inválida ou expirada. Por favor, tente novamente.', 'error')
         return redirect(url_for('autenticacao.pagina_login'))
 
 @auth_bp.route('/logout')

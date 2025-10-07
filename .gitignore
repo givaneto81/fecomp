@@ -13,6 +13,8 @@ fecomp/uploads/
 # Arquivo de ambiente 
 .env
 
+instance/
+
 # Configurações de IDEs/Editores
 .vscode/
 .idea/

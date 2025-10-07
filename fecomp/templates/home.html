@@ -5,7 +5,7 @@
 {% block content %}
 <div class="form-container">
     <form id="add-subject-form" class="add-subject-form">
-        {{ csrf_token() }}
+    {{ form.hidden_tag() }}
         <h3>Criar Nova Matéria</h3>
         <input type="text" name="subject_name" placeholder="Nome da Matéria" required>
         <button type="submit">Adicionar</button>
@@ -33,7 +33,7 @@
         <span class="close-btn">&times;</span>
         <h2>Alterar Cor da Matéria</h2>
         <form id="color-subject-form" action="" method="post" class="modal-form">
-            {{ csrf_token() }}
+            {{ form.hidden_tag() }}
             <label for="new_subject_color_hex">Nova cor:</label>
             <div class="color-input-wrapper">
                 <span>#</span>
@@ -51,7 +51,7 @@
         <h2>Excluir Matéria</h2>
         <p>Você tem certeza? Todas as pastas e arquivos dentro desta matéria também serão excluídos. Esta ação é irreversível.</p>
         <form id="delete-subject-form" action="" method="post">
-            {{ csrf_token() }}
+            {{ delete_form.hidden_tag() }}
             <button type="submit" class="profile-btn delete">Sim, excluir esta matéria</button>
         </form>
     </div>

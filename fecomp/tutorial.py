@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, jsonify
 from .models import User
-from .extensions import db
-from .visoes import login_required # Reutilizamos o decorator de login
+from .extensions import db, csrf
+from .visoes import login_required 
 
 # Cria o Blueprint do tutorial
 tutorial_bp = Blueprint('tutorial', __name__)
@@ -20,6 +20,7 @@ def pagina_tutorial():
     return render_template('tutorial.html')
 
 @tutorial_bp.route('/api/utilizador/concluir_tutorial', methods=['POST'])
+@csrf.exempt
 @login_required
 def concluir_tutorial():
     """

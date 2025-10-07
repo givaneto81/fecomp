@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, session, url_for
 from functools import wraps
-import random # Importa a biblioteca random
+import random
 from .models import Subject, User
-from .extensions import db
+from .extensions import db, csrf 
 
 api_bp = Blueprint('api', __name__)
 
@@ -36,6 +36,7 @@ def dica_do_dia():
 
 
 @api_bp.route('/add_subject', methods=['POST'])
+@csrf.exempt
 @login_required
 def add_subject_api():
     data = request.get_json()
@@ -62,6 +63,7 @@ def add_subject_api():
 
 
 @api_bp.route('/chat', methods=['POST'])
+@csrf.exempt
 @login_required
 def chat_api():
     user_message = request.json.get('message')
