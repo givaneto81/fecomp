@@ -19,6 +19,7 @@
         
     <div class="file-card upload-card">
         <form class="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
+            {{ csrf_token() }}
             <label for="file-upload" class="upload-label">
                 <i data-feather="upload-cloud"></i>
                 <span>Enviar Arquivo</span>
@@ -37,6 +38,7 @@
         <h2>Excluir Ficheiro</h2>
         <p>Você tem certeza que deseja excluir este ficheiro? Esta ação é irreversível.</p>
         <form id="delete-file-form" action="" method="post">
+            {{ csrf_token() }}
             <button type="submit" class="profile-btn delete">Sim, excluir</button>
         </form>
     </div>

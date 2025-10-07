@@ -11,7 +11,7 @@ __pycache__/
 fecomp/uploads/
 
 # Arquivo de ambiente 
-.venv
+.env
 
 # Configurações de IDEs/Editores
 .vscode/
