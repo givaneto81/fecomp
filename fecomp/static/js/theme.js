@@ -1,28 +1,44 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const themeSwitch = document.getElementById('theme-switch-checkbox');
+    // Seleciona ambos os controlos de tema
+    const themeSwitchCheckbox = document.getElementById('theme-switch-checkbox');
+    const themeToggleButton = document.getElementById('theme-toggle-btn');
     const body = document.body;
 
-    // Função para aplicar o tema
+    // Função para aplicar o tema e atualizar o estado do interruptor (checkbox)
     const applyTheme = (theme) => {
         if (theme === 'dark') {
             body.classList.add('dark-mode');
-            if (themeSwitch) themeSwitch.checked = true;
+            if (themeSwitchCheckbox) themeSwitchCheckbox.checked = true;
         } else {
             body.classList.remove('dark-mode');
-            if (themeSwitch) themeSwitch.checked = false;
+            if (themeSwitchCheckbox) themeSwitchCheckbox.checked = false;
         }
     };
 
-    // Verifica se já existe um tema salvo no localStorage
+    // Carrega o tema salvo ao iniciar
     const savedTheme = localStorage.getItem('theme') || 'light';
     applyTheme(savedTheme);
 
-    // Adiciona o evento de clique no interruptor
-    if (themeSwitch) {
-        themeSwitch.addEventListener('change', () => {
-            const newTheme = themeSwitch.checked ? 'dark' : 'light';
-            localStorage.setItem('theme', newTheme); // Salva a nova preferência
-            applyTheme(newTheme);
+    // Função centralizada para gerir a mudança de tema
+    const handleThemeChange = (newTheme) => {
+        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
+    };
+
+    // Evento para o interruptor on/off (checkbox)
+    if (themeSwitchCheckbox) {
+        themeSwitchCheckbox.addEventListener('change', () => {
+            const newTheme = themeSwitchCheckbox.checked ? 'dark' : 'light';
+            handleThemeChange(newTheme);
+        });
+    }
+
+    // Evento para o botão de ícone único
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', () => {
+            const isDarkMode = body.classList.contains('dark-mode');
+            const newTheme = isDarkMode ? 'light' : 'dark';
+            handleThemeChange(newTheme);
         });
     }
 });

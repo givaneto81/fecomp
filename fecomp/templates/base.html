@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Educa AI - {% block title %}{% endblock %}</title>
-    <link rel="icon" href="{{ url_for('static', filename='imagens/logo.png') }}">           
+    <link rel="icon" href="{{ url_for('static', filename='imagens/logo.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,24 +13,27 @@
     {% block head_scripts %}{% endblock %}
 </head>
 <body>
-    <div class="main-container">
-        <aside class="sidebar">
-            <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
-            <h1 class="logo-sidebar">EDUCA AI</h1>
+    <div class="main-container sidebar-collapsed">
+        <aside class="sidebar collapsed">
+            <div class="logo-container">
+                 <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
+                 <h1 class="logo-sidebar">EDUCA AI</h1>
+            </div>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="{{ url_for('visoes.pagina_inicio') }}"><i data-feather="home"></i>Início</a></li>
-                    <li><a href="{{ url_for('visoes.pagina_materias') }}"><i data-feather="book-open"></i>Matérias</a></li>
-                    <li><a href="{{ url_for('visoes.pagina_chat') }}"><i data-feather="message-circle"></i>Chat</a></li>
-                    <li><a href="{{ url_for('visoes.pagina_perfil') }}"><i data-feather="user"></i>Perfil</a></li>
+                    <li><a href="{{ url_for('visoes.pagina_inicio') }}"><i data-feather="home"></i><span>Início</span></a></li>
+                    <li><a href="{{ url_for('visoes.pagina_materias') }}"><i data-feather="book-open"></i><span>Matérias</span></a></li>
+                    <li><a href="{{ url_for('visoes.pagina_chat') }}"><i data-feather="message-circle"></i><span>Chat</span></a></li>
+                    <li><a href="{{ url_for('visoes.pagina_perfil') }}"><i data-feather="user"></i><span>Perfil</span></a></li>
                 </ul>
             </nav>
             <div class="user-profile">
                 {% if session['user_name'] %}
-                    <p>Olá, {{ session['user_name'] }}!</p>
+                    <p>Olá, <span>{{ session['user_name'].split(' ')[0] }}</span>!</p>
                     <a href="{{ url_for('autenticacao.logout') }}">Sair</a>
                 {% endif %}
             </div>
+
             <div class="theme-switch-wrapper">
                 <i data-feather="sun"></i>
                 <label class="theme-switch" for="theme-switch-checkbox">
@@ -39,8 +42,19 @@
                 </label>
                 <i data-feather="moon"></i>
             </div>
+
+            <div class="theme-toggle-container">
+                <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Alternar tema">
+                    <i data-feather="sun" class="sun-icon"></i>
+                    <i data-feather="moon" class="moon-icon"></i>
+                </button>
+            </div>
         </aside>
         <main class="content">
+            <div id="menu-toggle" class="menu-toggle">
+                <i data-feather="menu"></i>
+            </div>
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div class="flash-messages-container">
@@ -58,6 +72,7 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script>
       feather.replace();
     </script>
