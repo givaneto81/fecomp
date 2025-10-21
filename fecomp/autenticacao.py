@@ -24,6 +24,7 @@ def pagina_registo():
             return redirect(url_for('autenticacao.pagina_login'))
 
         senha_hash = generate_password_hash(senha)
+        # NOTA: O 'role' aqui usará o default='aluno' do models.py
         novo_utilizador = User(name=nome, email=email, password_hash=senha_hash)
         
         db.session.add(novo_utilizador)
@@ -45,6 +46,8 @@ def login():
             session.clear()
             session['user_id'] = utilizador.id
             session['user_name'] = utilizador.name
+            # NÍVEL 1.3: Armazena a role na sessão para verificações rápidas
+            session['user_role'] = utilizador.role
             
             if not utilizador.tutorial_concluido:
                 return redirect(url_for('tutorial.pagina_tutorial'))
@@ -61,4 +64,4 @@ def login():
 def logout():
     session.clear()
     flash('Você saiu da sua conta.', 'success')
-    return redirect(url_for('autenticacao.pagina_login'))
+    return redirect(url_for('autenticacao.pagina_login'))   

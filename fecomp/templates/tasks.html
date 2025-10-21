@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Minhas Tarefas{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Minhas Tarefas</h2>
+
+<h3>Pendentes</h3>
+<div class="subject-grid">
+{% for task in pending_tasks %}
+    <div class="subject-card" style="background-color: #f0ad4e;">
+        <div class="subject-link">
+            <strong>{{ task.title }}</strong>
+            <p>{{ task.course.name }}</p>
+            <p>Prazo: {{ task.due_date.strftime('%d/%m/%Y %H:%M') if task.due_date else 'Sem prazo' }}</p>
+            <form action="{{ url_for('visoes.submit_task', task_id=task.id) }}" method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }} <input type="file" name="file" required>
+                <button type="submit" class="btn-entrar">Enviar</button>
+            </form>
+        </div>
+    </div>
+{% else %}
+    <p>Você não tem tarefas pendentes!</p>
+{% endfor %}
+</div>
+
+<hr>
+<h3>Concluídas</h3>
+<div class="subject-grid">
+{% for task in completed_tasks %}
+    <div class="subject-card" style="background-color: #5cb85c;">
+        <div class="subject-link">
+            <strong>{{ task.title }}</strong>
+            <p>{{ task.course.name }}</p>
+            <p>(Enviado)</p>
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

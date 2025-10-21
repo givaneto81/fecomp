@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Gerir Utilizadores{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Gerir Administradores do sistema</h2>
+
+<div class="user-list-container">
+    {% for user in users %}
+    <div class="user-manage-card">
+        <div class="user-info">
+            <strong>{{ user.name }}</strong>
+            <span>{{ user.email }}</span>
+        </div>
+        
+        <form class="user-role-form" action="{{ url_for('admin_bp.set_user_role', user_id=user.id) }}" method="POST">
+            {{ form.hidden_tag() }}
+            <label for="role-{{ user.id }}">Função:</label>
+            <select name="role" id="role-{{ user.id }}">
+                <option value="aluno" {% if user.role == 'aluno' %}selected{% endif %}>Aluno</option>
+                <option value="professor" {% if user.role == 'professor' %}selected{% endif %}>Professor</option>
+            </select>
+            <button type="submit" class="profile-btn">Salvar</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="user-manage-card">
+        <p>Nenhum outro utilizador registado no sistema.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.user-list-container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.user-manage-card {
+    background-color: var(--content-bg-color);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Para ecrãs pequenos */
+    gap: 15px;
+}
+.user-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.user-info strong {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-color);
+}
+.user-info span {
+    font-size: 0.9em;
+    color: var(--text-color-light);
+}
+.user-role-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.user-role-form label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+.user-role-form select {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+.user-role-form .profile-btn {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    background-color: var(--success-color); /* Verde para salvar */
+}
+.user-role-form .profile-btn:hover {
+    background-color: var(--success-hover-color);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Painel de Admin{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Painel do Administrador</h2>
+
+<div class="form-container">
+    <form action="{{ url_for('admin_bp.create_course') }}" method="post" class="add-subject-form">
+        {{ form.hidden_tag() }}
+        <h3>Criar Nova Turma</h3>
+        <input type="text" name="course_name" placeholder="Nome da Turma (Ex: Intensivo MED 2025)" required>
+        <button type="submit">Criar Turma</button>
+    </form>
+</div>
+
+<h3 class="page-title" style="font-size: 1.5em;">Minhas Turmas</h3>
+<div class="subject-grid">
+    {% for course in courses %}
+        <div class="subject-card" style="background-color: #007bff;">
+            <a href="{{ url_for('admin_bp.manage_course', course_id=course.id) }}" class="subject-link">
+                {{ course.name }}
+            </a>
+            </div>
+    {% endfor %}
+    {% if not courses %}
+    <p>Você ainda não criou nenhuma turma.</p>
+    {% endif %}
+</div>
+<hr>
+<h3 class="page-title" style="font-size: 1.5em;">Gestão de Usuários</h3>
+<p><a href="{{ url_for('admin_bp.manage_users') }}" class="profile-btn">Promover Usuários (Aluno/Professor)</a></p>
+{% endblock %}

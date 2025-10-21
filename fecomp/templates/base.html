@@ -23,9 +23,17 @@
                 <ul>
                     <li><a href="{{ url_for('visoes.pagina_inicio') }}"><i data-feather="home"></i><span>Início</span></a></li>
                     <li><a href="{{ url_for('visoes.pagina_materias') }}"><i data-feather="book-open"></i><span>Matérias</span></a></li>
+                    
+                    {% if session.get('user_role') == 'aluno' %}
+                    <li><a href="{{ url_for('visoes.tasks') }}"><i data-feather="check-square"></i><span>Tarefas</span></a></li>
+                    {% endif %}
                     <li><a href="{{ url_for('visoes.pagina_chat') }}"><i data-feather="message-circle"></i><span>Chat</span></a></li>
                     <li><a href="{{ url_for('visoes.pagina_perfil') }}"><i data-feather="user"></i><span>Perfil</span></a></li>
-                </ul>
+                    
+                    {% if session.get('user_role') == 'admin' %}
+                    <li><a href="{{ url_for('admin_bp.index') }}"><i data-feather="settings"></i><span>Admin</span></a></li>
+                    {% endif %}
+                    </ul>
             </nav>
             <div class="user-profile">
                 {% if session['user_name'] %}

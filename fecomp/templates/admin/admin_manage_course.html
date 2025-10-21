@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}Gerir {{ course.name }}{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Gerir Turma: {{ course.name }}</h2>
+
+<div class="form-container">
+    <form action="{{ url_for('admin_bp.post_announcement', course_id=course.id) }}" method="post" class="add-subject-form">
+        {{ form.hidden_tag() }}
+        <h3>Publicar Aviso no Mural</h3>
+        <textarea name="content" placeholder="Escreva o aviso para os alunos..." required rows="3" style="flex-grow: 1; resize: vertical;"></textarea>
+        <button type="submit" style="align-self: flex-start;">Publicar</button>
+    </form>
+    <div style="margin-top: 15px;">
+        <h4>Avisos Recentes (Últimos 5):</h4>
+        <ul>
+            {# --- CORREÇÃO AQUI --- #}
+            {# Ordena os anúncios e depois limita o loop aos primeiros 5 usando loop.index #}
+            {% for announcement in course.announcements|sort(attribute='timestamp', reverse=True) %}
+                {% if loop.index <= 5 %} 
+                    <li>{{ announcement.content }} <small>({{ announcement.timestamp.strftime('%d/%m %H:%M') }} por {{ announcement.professor.name }})</small></li>
+                {% endif %}
+            {# --- FIM DA CORREÇÃO --- #}
+            {% else %}
+                <li>Nenhum aviso publicado.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+<div class="form-container">
+    <form action="{{ url_for('admin_bp.create_task', course_id=course.id) }}" method="post" class="modal-form" style="display: flex; flex-direction: column; gap: 10px;">
+        {{ form.hidden_tag() }}
+        <h3>Criar Nova Tarefa</h3>
+        
+        <label for="title-{{ course.id }}">Título:</label>
+        <input type="text" id="title-{{ course.id }}" name="title" required>
+        
+        <label for="description-{{ course.id }}">Descrição:</label>
+        <textarea id="description-{{ course.id }}" name="description" rows="3"></textarea>
+        
+        <label for="due_date-{{ course.id }}">Prazo (opcional):</label>
+        <input type="datetime-local" id="due_date-{{ course.id }}" name="due_date">
+        
+        <label for="subject_id-{{ course.id }}">Matéria (opcional):</label>
+        <select id="subject_id-{{ course.id }}" name="subject_id">
+            <option value="None">Geral da Turma</option> {# Usar 'None' como string ou deixar value="" #}
+            {% for subject in course.subjects %}
+            <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" class="btn-entrar" style="align-self: flex-start;">Criar Tarefa</button>
+    </form>
+     <div style="margin-top: 15px;">
+        <h4>Tarefas Criadas:</h4>
+        <ul>
+            {% for task in course.tasks|sort(attribute='created_at', reverse=True) %}
+                 <li><a href="{{ url_for('admin_bp.view_submissions', task_id=task.id) }}">{{ task.title }}</a> <small> (Prazo: {{ task.due_date.strftime('%d/%m/%Y %H:%M') if task.due_date else 'N/A' }})</small></li>
+            {% else %}
+                <li>Nenhuma tarefa criada para esta turma.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+<div class="form-container">
+    <form action="{{ url_for('admin_bp.add_course_subject', course_id=course.id) }}" method="post" class="add-subject-form">
+        {{ form.hidden_tag() }}
+        <h3>Adicionar Matéria à Turma</h3>
+        <input type="text" name="subject_name" placeholder="Nome da Matéria (Ex: Redação)" required>
+        <button type="submit">Adicionar</button>
+    </form>
+    <div style="margin-top: 15px;">
+        <h4>Matérias da Turma:</h4>
+        <ul>
+            {% for subject in course.subjects %}
+                <li>{{ subject.name }}</li>
+            {% else %}
+                <li>Nenhuma matéria adicionada a esta turma.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+
+<div class="form-container">
+    <h3>Membros da Turma ({{ course.members|length }})</h3>
+    <ul style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto; margin-bottom: 20px;">
+    {% for member in course.members %}
+        <li style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border-color);">
+            <span>{{ member.name }} ({{ member.role }}) - {{ member.email }}</span>
+            <form action="{{ url_for('admin_bp.remove_member', course_id=course.id, user_id=member.id) }}" method="POST" style="display: inline;">
+                {{ form.hidden_tag() }}
+                <button type="submit" class="profile-btn delete" style="padding: 2px 5px; font-size: 0.8em;">Remover</button>
+            </form>
+        </li>
+    {% else %}
+        <li>Nenhum membro nesta turma.</li>
+    {% endfor %}
+    </ul>
+    
+    <hr style="margin: 20px 0;">
+
+    <h3>Adicionar Membro à Turma</h3>
+    {% if non_members %}
+    <form action="{{ url_for('admin_bp.add_member', course_id=course.id) }}" method="POST" class="add-subject-form">
+        {{ form.hidden_tag() }}
+        <select name="user_id" style="flex-grow: 1;">
+            {% for user in non_members %}
+            <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Adicionar</button>
+    </form>
+    {% else %}
+    <p>Todos os utilizadores já estão nesta turma ou não há outros utilizadores no sistema.</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 30px; text-align: center;">
+    <a href="{{ url_for('admin_bp.index') }}" class="profile-btn" style="background-color: var(--text-color-light);">Voltar ao Painel</a>
+</div>
+
+{% endblock %}

@@ -35,16 +35,21 @@ def dica_do_dia():
     return jsonify(dica=random.choice(DICAS))
 
 
+# NÍVEL 2.2: ESTA ROTA AGORA CRIA APENAS MATÉRIAS PESSOAIS
 @api_bp.route('/add_subject', methods=['POST'])
 @csrf.exempt
 @login_required
 def add_subject_api():
+    """
+    Cria uma nova matéria PESSOAL para o utilizador logado.
+    """
     data = request.get_json()
     subject_name = data.get('subject_name')
 
     if not subject_name:
         return jsonify({"error": "O nome da matéria não pode estar vazio."}), 400
 
+    # NÍVEL 2.1: Define explicitamente o user_id (matéria pessoal)
     new_subject = Subject(name=subject_name, user_id=session['user_id'])
     db.session.add(new_subject)
     db.session.commit()
