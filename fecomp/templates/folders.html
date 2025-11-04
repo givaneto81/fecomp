@@ -7,16 +7,21 @@
 <div class="file-grid">
     {% for file in files %}
     <div class="file-card">
-        <a href="{{ url_for('visoes.uploaded_file', filename=file.filename) }}" target="_blank" class="file-link">
+        <a href="#" 
+           onclick="openFileViewer('{{ url_for('visoes.uploaded_file', filename=file.filename) }}', '{{ file.original_filename }}'); return false;" 
+           class="file-link">
             <i data-feather="file-text" class="file-icon"></i>
             <span>{{ file.original_filename }}</span>
         </a>
+        {% if can_edit %}
         <div class="file-actions">
             <button class="action-btn-file delete-file-btn" data-file-id="{{ file.id }}"><i data-feather="trash-2"></i></button>
         </div>
+        {% endif %}
     </div>
     {% endfor %}
         
+    {% if can_edit %}
     <div class="file-card upload-card">
         <form class="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
@@ -27,11 +32,13 @@
             <input id="file-upload" name="file" type="file" onchange="this.form.submit()">
         </form>
     </div>
+    {% endif %}
 </div>
 {% if not files %}
-    <p class="empty-message">Nenhum ficheiro aqui. Comece enviando um!</p>
+    <p class="empty-message">Nenhum ficheiro aqui. {% if can_edit %}Comece enviando um!{% endif %}</p>
 {% endif %}
 
+{% if can_edit %}
 <div id="delete-file-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
@@ -43,6 +50,7 @@
         </form>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block page_scripts %}

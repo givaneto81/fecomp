@@ -1,0 +1,20 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Editar Matéria{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Editar Matéria: {{ subject.name }}</h2>
+
+<div class="form-container">
+    <form action="{{ url_for('admin_bp.edit_course_subject', subject_id=subject.id) }}" method="post" class="modal-form" style="display: flex; flex-direction: column; gap: 10px;">
+        {{ form.hidden_tag() }}
+        
+        <label for="subject_name">Nome da Matéria:</label>
+        <input type="text" id="subject_name" name="subject_name" value="{{ subject.name }}" required>
+        
+        <div style="display: flex; gap: 15px; margin-top: 15px;">
+             <button type="submit" class="btn-entrar" style="align-self: flex-start;">Salvar Alterações</button>
+             <a href="{{ url_for('admin_bp.manage_course', course_id=subject.course_id) }}" class="profile-btn delete" style="text-decoration: none;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

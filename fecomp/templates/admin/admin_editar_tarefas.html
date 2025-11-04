@@ -1,0 +1,37 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Editar Tarefa{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Editar Tarefa: {{ task.title }}</h2>
+
+<div class="form-container">
+    <form action="{{ url_for('admin_bp.edit_task', task_id=task.id) }}" method="post" class="modal-form" style="display: flex; flex-direction: column; gap: 10px;">
+        {{ form.hidden_tag() }}
+        
+        <label for="title">Título:</label>
+        <input type="text" id="title" name="title" value="{{ task.title }}" required>
+        
+        <label for="description">Descrição:</label>
+        <textarea id="description" name="description" rows="3">{{ task.description or '' }}</textarea>
+        
+        <label for="due_date">Prazo (opcional):</label>
+        <input type="datetime-local" id="due_date" name="due_date" 
+               value="{{ task.due_date.strftime('%Y-%m-%dT%H:%M') if task.due_date else '' }}">
+        
+        <label for="subject_id">Matéria (opcional):</label>
+        <select id="subject_id" name="subject_id">
+            <option value="None" {% if not task.subject_id %}selected{% endif %}>Geral da Turma</option>
+            {% for subject in task.course.subjects %}
+            <option value="{{ subject.id }}" {% if task.subject_id == subject.id %}selected{% endif %}>
+                {{ subject.name }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        <div style="display: flex; gap: 15px; margin-top: 15px;">
+             <button type="submit" class="btn-entrar" style="align-self: flex-start;">Salvar Alterações</button>
+             <a href="{{ url_for('admin_bp.manage_course', course_id=task.course_id) }}" class="profile-btn delete" style="text-decoration: none;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

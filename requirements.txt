@@ -4,5 +4,6 @@
    Flask-WTF
    psycopg2-binary  # ou o driver do seu banco, no meu caso é o psql
    google-generativeai
+   PyPDF2
    werkzeug
    python-dotenv

@@ -17,15 +17,25 @@ def pagina_registo():
         nome = request.form.get('name')
         email = request.form.get('email')
         senha = request.form.get('senha')
+        
+        role = request.form.get('role', 'aluno')
+
         utilizador_existe = User.query.filter_by(email=email).first()
 
         if utilizador_existe:
             flash('Este email já está registado. Tente fazer login.', 'error')
             return redirect(url_for('autenticacao.pagina_login'))
+        
+        if role not in ['aluno', 'professor']:
+            flash('Função inválida selecionada.', 'error')
+            return redirect(url_for('autenticacao.pagina_registo'))
 
         senha_hash = generate_password_hash(senha)
-        # NOTA: O 'role' aqui usará o default='aluno' do models.py
-        novo_utilizador = User(name=nome, email=email, password_hash=senha_hash)
+        
+        novo_utilizador = User(name=nome, 
+                             email=email, 
+                             password_hash=senha_hash, 
+                             role=role)
         
         db.session.add(novo_utilizador)
         db.session.commit()
@@ -43,10 +53,15 @@ def login():
         utilizador = User.query.filter_by(email=email).first()
 
         if utilizador and check_password_hash(utilizador.password_hash, senha):
+            
+            """if utilizador.email == 'admin@admin' and utilizador.role != 'admin':
+                utilizador.role = 'admin'
+                db.session.commit()
+                flash('Privilégios de Administrador concedidos!', 'success')""" 
+
             session.clear()
             session['user_id'] = utilizador.id
             session['user_name'] = utilizador.name
-            # NÍVEL 1.3: Armazena a role na sessão para verificações rápidas
             session['user_role'] = utilizador.role
             
             if not utilizador.tutorial_concluido:
@@ -64,4 +79,4 @@ def login():
 def logout():
     session.clear()
     flash('Você saiu da sua conta.', 'success')
-    return redirect(url_for('autenticacao.pagina_login'))   
+    return redirect(url_for('autenticacao.pagina_login'))

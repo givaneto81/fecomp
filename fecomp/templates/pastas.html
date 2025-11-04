@@ -4,6 +4,8 @@
 
 {% block content %}
 <h2 class="page-title">Matéria: {{ subject.name }}</h2>
+
+{% if can_edit %}
 <div class="form-container">
     <form action="{{ url_for('visoes.add_folder', subject_id=subject.id) }}" method="post" class="add-subject-form">
         {{ form.hidden_tag() }}
@@ -12,6 +14,8 @@
         <button type="submit">Adicionar</button>
     </form>
 </div>
+{% endif %}
+
 <div class="file-grid">
     {% for folder in folders %}
         <div class="file-card folder contrast-card" style="background-color: {{ folder.color }};">
@@ -19,18 +23,21 @@
                 <i data-feather="folder" class="file-icon"></i>
                 <span>{{ folder.name }}</span>
             </a>
+            {% if can_edit %}
             <div class="folder-actions">
                 <button class="action-btn rename-btn" data-folder-id="{{ folder.id }}" data-folder-name="{{ folder.name }}"><i data-feather="edit-2"></i></button>
                 <button class="action-btn color-btn" data-folder-id="{{ folder.id }}" data-folder-color="{{ folder.color }}"><i data-feather="droplet"></i></button>
                 <button class="action-btn delete-btn" data-folder-id="{{ folder.id }}"><i data-feather="trash-2"></i></button>
             </div>
+            {% endif %}
         </div>
     {% endfor %}
 </div>
 {% if not folders %}
-    <p class="empty-message">Nenhuma pasta criada. Adicione uma acima!</p>
+    <p class="empty-message">Nenhuma pasta criada. {% if can_edit %}Adicione uma acima!{% endif %}</p>
 {% endif %}
 
+{% if can_edit %}
 <div id="rename-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
@@ -70,9 +77,10 @@
         </form>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block page_scripts %}
 <script src="{{ url_for('static', filename='js/contraste.js') }}"></script>
 <script src="{{ url_for('static', filename='js/pastas.js') }}"></script>
-{% endblock %}      
+{% endblock %}

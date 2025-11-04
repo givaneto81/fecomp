@@ -19,7 +19,9 @@
                  <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
                  <h1 class="logo-sidebar">EDUCA AI</h1>
             </div>
+            
             <nav class="nav-menu">
+                {% block sidebar_nav %}
                 <ul>
                     <li><a href="{{ url_for('visoes.pagina_inicio') }}"><i data-feather="home"></i><span>Início</span></a></li>
                     <li><a href="{{ url_for('visoes.pagina_materias') }}"><i data-feather="book-open"></i><span>Matérias</span></a></li>
@@ -30,11 +32,13 @@
                     <li><a href="{{ url_for('visoes.pagina_chat') }}"><i data-feather="message-circle"></i><span>Chat</span></a></li>
                     <li><a href="{{ url_for('visoes.pagina_perfil') }}"><i data-feather="user"></i><span>Perfil</span></a></li>
                     
-                    {% if session.get('user_role') == 'admin' %}
+                    {% if session.get('user_role') == 'admin' or session.get('user_role') == 'professor' %}
                     <li><a href="{{ url_for('admin_bp.index') }}"><i data-feather="settings"></i><span>Admin</span></a></li>
                     {% endif %}
-                    </ul>
+                </ul>
+                {% endblock sidebar_nav %}
             </nav>
+
             <div class="user-profile">
                 {% if session['user_name'] %}
                     <p>Olá, <span>{{ session['user_name'].split(' ')[0] }}</span>!</p>
@@ -79,11 +83,20 @@
         </main>
     </div>
 
+    <div id="file-viewer-modal" class="modal file-viewer-modal">
+        <div class="viewer-content">
+            <span id="close-viewer-btn" class="close-btn">&times;</span>
+            <div id="viewer-container">
+                </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     <script>
       feather.replace();
     </script>
+    <script src="{{ url_for('static', filename='js/file_viewer.js') }}"></script>
     {% block page_scripts %}{% endblock %}
 </body>
 </html>

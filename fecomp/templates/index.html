@@ -6,7 +6,7 @@
 <div class="login-container">
     <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" class="logo-image">
     <h1 class="logo">Educa AI</h1>
-    <p class="subtitle">Seu repositório acadêmico</p>
+    <p class="subtitle">Seu repositório inteligente</p>
     
     <form class="login-form" action="{{ url_for('autenticacao.login') }}" method="post">
         {{ form.hidden_tag() }}

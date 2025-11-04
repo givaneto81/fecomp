@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block sidebar_nav %}
+<ul>
+    <li><a href="{{ url_for('admin_bp.index') }}"><i data-feather="sliders"></i><span>Painel</span></a></li>
+    
+    {% if session.get('user_role') == 'admin' %}
+    <li><a href="{{ url_for('admin_bp.manage_users') }}"><i data-feather="users"></i><span>Permissões</span></a></li>
+    {% endif %}
+
+    <li style="margin-top: 30px; border-top: 1px solid #495057; padding-top: 30px;">
+        <a href="{{ url_for('visoes.pagina_inicio') }}"><i data-feather="arrow-left-circle"></i><span>Voltar ao Site</span></a>
+    </li>
+</ul>
+{% endblock sidebar_nav %}

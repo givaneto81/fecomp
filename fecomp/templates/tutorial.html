@@ -6,97 +6,42 @@
     <title>Bem-vindo ao Educa AI</title>
     <link rel="icon" href="{{ url_for('static', filename='imagens/logo.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        /* Estilos específicos para o tutorial */
-        body.tutorial-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: var(--bg-color);
-        }
-        .tutorial-container {
-            background-color: var(--content-bg-color);
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px var(--shadow-color);
-            text-align: center;
-            width: 90%;
-            max-width: 600px;
-            overflow: hidden; /* Para a transição dos slides */
-        }
-        .tutorial-slider {
-            display: flex;
-            transition: transform 0.4s ease-in-out;
-        }
-        .tutorial-etapa {
-            min-width: 100%;
-            box-sizing: border-box;
-        }
-        .tutorial-etapa h2 {
-            font-size: 2em;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-        .tutorial-etapa p {
-            font-size: 1.1em;
-            color: var(--text-color-light);
-            line-height: 1.6;
-        }
-        .tutorial-nav {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .btn-tutorial {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .btn-tutorial:hover {
-            background-color: var(--primary-hover-color);
-        }
-        .btn-tutorial[disabled] {
-            background-color: var(--text-color-light);
-            cursor: not-allowed;
-        }
-        .etapa-indicadores span {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--border-color);
-            margin: 0 5px;
-            transition: background-color 0.3s;
-        }
-        .etapa-indicadores span.active {
-            background-color: var(--primary-color);
-        }
-    </style>
+    
 </head>
 <body class="tutorial-page">
 
     <div class="tutorial-container">
         <div class="tutorial-slider">
+
+            {% if user_role == 'aluno' %}
             <div class="tutorial-etapa" id="etapa-1">
                 <h2>🎓 Bem-vindo(a) ao Educa AI!</h2>
                 <p>O seu novo assistente de estudos para o SSA e ENEM. Aqui, pode organizar todo o seu material e tirar dúvidas com uma IA poderosa.</p>
             </div>
             <div class="tutorial-etapa" id="etapa-2">
                 <h2>📘 Organize-se como nunca</h2>
-                <p>Crie <strong>Matérias</strong> (como "Matemática" ou "História"), dentro delas crie <strong>Pastas</strong> (como "Provas Antigas") e envie os seus <strong>Ficheiros</strong> (PDFs, imagens, etc.).</p>
+                <p>Crie <strong>Matérias</strong> (como "Matemática"), dentro delas crie <strong>Pastas</strong> (como "Provas Antigas") e envie os seus <strong>Ficheiros</strong> (PDFs, imagens, etc.).</p>
             </div>
             <div class="tutorial-etapa" id="etapa-3">
                 <h2>💬 Tire dúvidas a qualquer hora</h2>
                 <p>Use o nosso <strong>Chat IA</strong> para explicar tópicos, resolver problemas e obter resumos. É como ter um professor particular 24 horas por dia!</p>
             </div>
+            
+            {% else %}
+            
+            <div class="tutorial-etapa" id="etapa-1-prof">
+                <h2>🎓 Bem-vindo(a), Professor(a)!</h2>
+                <p>Você está no Educa AI. Assim que um administrador vincular você a uma turma, seu painel principal será ativado.</p>
+            </div>
+            <div class="tutorial-etapa" id="etapa-2-prof">
+                <h2>🚀 Gestão Completa</h2>
+                <p>No painel <strong>Admin</strong>, você poderá criar <strong>Tarefas</strong>, postar <strong>Avisos</strong> no mural dos alunos e adicionar <strong>Matérias</strong> à sua turma.</p>
+            </div>
+            <div class="tutorial-etapa" id="etapa-3-prof">
+                <h2>📂 Use-o como repositório</h2>
+                <p>Você também pode usar a secção <strong>Matérias</strong> como seu repositório pessoal de arquivos, separado das turmas. Comece a se organizar!</p>
+            </div>
+            {% endif %}
         </div>
 
         <div class="tutorial-nav">
@@ -105,7 +50,7 @@
                 <span class="active"></span><span></span><span></span>
             </div>
             <button id="btn-proximo" class="btn-tutorial">Próximo</button>
-            <button id="btn-comecar" class="btn-tutorial" style="display: none;">Começar a estudar!</button>
+            <button id="btn-comecar" class="btn-tutorial" style="display: none;">Começar!</button>
         </div>
     </div>
 
@@ -123,12 +68,10 @@
             function atualizarInterface() {
                 slider.style.transform = `translateX(-${etapaAtual * 100}%)`;
                 
-                // Atualiza botões
                 btnAnterior.style.visibility = etapaAtual === 0 ? 'hidden' : 'visible';
                 btnProximo.style.display = etapaAtual === totalEtapas - 1 ? 'none' : 'block';
                 btnComecar.style.display = etapaAtual === totalEtapas - 1 ? 'block' : 'none';
 
-                // Atualiza indicadores
                 indicadores.forEach((indicador, index) => {
                     indicador.classList.toggle('active', index === etapaAtual);
                 });
@@ -165,14 +108,13 @@
                     }
                     
                     btnComecar.textContent = 'Concluído!';
-                    // Redireciona para a página de início após sucesso
                     window.location.href = "{{ url_for('visoes.pagina_inicio') }}";
 
                 } catch (error) {
                     console.error('Erro:', error);
                     alert('Ocorreu um erro. Por favor, tente novamente.');
                     btnComecar.disabled = false;
-                    btnComecar.textContent = 'Começar a estudar!';
+                    btnComecar.textContent = 'Começar!';
                 }
             });
         });

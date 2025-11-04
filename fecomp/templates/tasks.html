@@ -4,36 +4,59 @@
 {% block content %}
 <h2 class="page-title">Minhas Tarefas</h2>
 
-<h3>Pendentes</h3>
-<div class="subject-grid">
-{% for task in pending_tasks %}
-    <div class="subject-card" style="background-color: #f0ad4e;">
-        <div class="subject-link">
-            <strong>{{ task.title }}</strong>
-            <p>{{ task.course.name }}</p>
-            <p>Prazo: {{ task.due_date.strftime('%d/%m/%Y %H:%M') if task.due_date else 'Sem prazo' }}</p>
-            <form action="{{ url_for('visoes.submit_task', task_id=task.id) }}" method="post" enctype="multipart/form-data">
-                {{ form.hidden_tag() }} <input type="file" name="file" required>
-                <button type="submit" class="btn-entrar">Enviar</button>
-            </form>
+<div class="task-container">
+    <h3 class="task-section-title">Pendentes</h3>
+    <div class="task-grid">
+    {% for task in pending_tasks %}
+        <div class="task-card task-pending">
+            <div class="task-card-header">
+                <strong>{{ task.title }}</strong>
+                <span>{{ task.course.name }}</span>
+            </div>
+            <div class="task-card-body">
+                <p><strong>Prazo:</strong> {{ task.due_date.strftime('%d/%m/%Y %H:%M') if task.due_date else 'Sem prazo' }}</p>
+                <form action="{{ url_for('visoes.submit_task', task_id=task.id) }}" method="post" enctype="multipart/form-data" class="task-submit-form">
+                    {{ form.hidden_tag() }}
+                    <input type="file" name="file" required class="task-file-input">
+                    <button type="submit" class="btn-entrar task-submit-btn">Enviar</button>
+                </form>
+            </div>
         </div>
+    {% else %}
+        <p>Você não tem tarefas pendentes!</p>
+    {% endfor %}
     </div>
-{% else %}
-    <p>Você não tem tarefas pendentes!</p>
-{% endfor %}
 </div>
 
-<hr>
-<h3>Concluídas</h3>
-<div class="subject-grid">
-{% for task in completed_tasks %}
-    <div class="subject-card" style="background-color: #5cb85c;">
-        <div class="subject-link">
-            <strong>{{ task.title }}</strong>
-            <p>{{ task.course.name }}</p>
-            <p>(Enviado)</p>
+<div class="task-container">
+    <h3 class="task-section-title">Concluídas</h3>
+    <div class="task-grid">
+    {% for sub in completed_submissions %}
+        <div class="task-card task-completed">
+            <div class="task-card-header">
+                <strong>{{ sub.task.title }}</strong>
+                <span>{{ sub.task.course.name }}</span>
+            </div>
+            <div class="task-card-body">
+                <p><strong>Enviado em:</strong> {{ sub.submitted_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                <p><strong>Nota:</strong> <span class="task-grade">{{ sub.grade if sub.grade else 'Aguardando correção' }}</span></p>
+                
+                {% if sub.feedback %}
+                <div class="task-feedback">
+                    <strong>Feedback do Professor:</strong>
+                    <p>{{ sub.feedback }}</p>
+                </div>
+                {% endif %}
+                
+                <a href="{{ url_for('visoes.uploaded_file', filename=sub.file.filename) }}" target="_blank" class="task-view-file-btn">
+                    Ver meu envio
+                </a>
+            </div>
         </div>
+    {% endfor %}
+    {% if not completed_submissions %}
+    <p>Nenhuma tarefa concluída ainda.</p>
+    {% endif %}
     </div>
-{% endfor %}
 </div>
 {% endblock %}

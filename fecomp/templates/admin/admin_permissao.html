@@ -1,9 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'admin/admin_base.html' %}
 
 {% block title %}Gerir Utilizadores{% endblock %}
 
 {% block content %}
-<h2 class="page-title">Gerir Administradores do sistema</h2>
+<h2 class="page-title">Gerir administradores do sistema</h2>
 
 <div class="user-list-container">
     {% for user in users %}
@@ -19,6 +19,7 @@
             <select name="role" id="role-{{ user.id }}">
                 <option value="aluno" {% if user.role == 'aluno' %}selected{% endif %}>Aluno</option>
                 <option value="professor" {% if user.role == 'professor' %}selected{% endif %}>Professor</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Administrador</option>
             </select>
             <button type="submit" class="profile-btn">Salvar</button>
         </form>

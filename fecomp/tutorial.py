@@ -17,7 +17,8 @@ def pagina_tutorial():
     if utilizador.tutorial_concluido:
         return redirect(url_for('visoes.pagina_inicio'))
     
-    return render_template('tutorial.html')
+    user_role = session.get('user_role', 'aluno')
+    return render_template('tutorial.html', user_role=user_role)
 
 @tutorial_bp.route('/api/utilizador/concluir_tutorial', methods=['POST'])
 @csrf.exempt

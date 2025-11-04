@@ -1,0 +1,38 @@
+{% extends 'admin/admin_base.html' %}
+{% block title %}Entregas de {{ task.title }}{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Entregas: {{ task.title }}</h2>
+<p><a href="{{ url_for('admin_bp.manage_course', course_id=task.course_id) }}">&larr; Voltar para a gestão da turma</a></p>
+
+<div class="user-list-container">
+    {% for sub in submissions %}
+    <div class="user-manage-card">
+        <div class="user-info">
+            <strong>{{ sub.student.name }}</strong>
+            <span>Enviado em: {{ sub.submitted_at.strftime('%d/%m/%Y %H:%M') }}</span>
+            <a href="{{ url_for('visoes.uploaded_file', filename=sub.file.filename) }}" target="_blank" class="profile-btn" style="background-color: var(--primary-color); margin-top: 10px; max-width: 150px; text-align: center;">
+                Ver Ficheiro
+            </a>
+        </div>
+        
+        <form class="user-role-form" action="{{ url_for('admin_bp.grade_submission', submission_id=sub.id) }}" method="POST" style="flex-grow: 1; max-width: 400px; align-items: stretch; flex-direction: column; gap: 10px;">
+            {{ form.hidden_tag() }}
+            
+            <label for="grade-{{ sub.id }}">Nota:</label>
+            <input type="text" id="grade-{{ sub.id }}" name="grade" placeholder="Ex: 8.5" value="{{ sub.grade or '' }}" class="login-form input" style="width: 100%;">
+            
+            <label for="feedback-{{ sub.id }}">Feedback:</label>
+            <textarea id="feedback-{{ sub.id }}" name="feedback" rows="3" placeholder="Escreva um comentário..." class="login-form input" style="width: 100%; resize: vertical;">{{ sub.feedback or '' }}</textarea>
+            
+            <button type="submit" class="profile-btn">Salvar Nota/Feedback</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="user-manage-card">
+        <p>Nenhum aluno enviou esta tarefa ainda.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

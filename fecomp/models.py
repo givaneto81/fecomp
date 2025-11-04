@@ -129,6 +129,10 @@ class Submission(db.Model):
     # NÍVEL 3.1: Reutiliza o seu modelo File existente!
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'), nullable=False)
     
+    # NOVAS COLUNAS PARA NOTA E FEEDBACK
+    grade = db.Column(db.String(50), nullable=True)
+    feedback = db.Column(db.Text, nullable=True)
+    
     # Garante que um aluno só pode enviar uma entrega por tarefa
     __table_args__ = (
         db.UniqueConstraint('task_id', 'student_id', name='uq_student_task_submission'),
