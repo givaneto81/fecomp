@@ -3,9 +3,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.querySelector('.chat-messages');
     const messageInput = document.querySelector('.chat-input');
     const sendBtn = document.querySelector('.chat-send-btn');
+    const contextSelect = document.getElementById('chat-context'); // <<< NOVO
     
     // Inicializa o conversor de Markdown
     const converter = new showdown.Converter();
+
+    // <<< NOVA FUNÇÃO (PRIORIDADE 5) >>>
+    // Carrega os contextos (pastas) do usuário no dropdown
+    const loadContexts = async () => {
+        try {
+            const response = await fetch('/api/user_contexts');
+            if (!response.ok) throw new Error('Falha ao buscar contextos');
+            
+            const data = await response.json();
+            if (data.contexts && data.contexts.length > 0) {
+                const group = document.createElement('optgroup');
+                group.label = 'Analisar Documentos da Pasta';
+                
+                data.contexts.forEach(context => {
+                    const option = document.createElement('option');
+                    option.value = context.id; // ID da Pasta
+                    option.textContent = context.name; // Nome (Ex: Pessoal: Mat / Provas)
+                    group.appendChild(option);
+                });
+                contextSelect.appendChild(group);
+            }
+        } catch (error) {
+            console.error("Erro ao carregar contextos:", error);
+            // Não bloqueia o chat, apenas o RAG
+        }
+    };
+    // <<< FIM DA NOVA FUNÇÃO >>>
+
 
     if (chatMessages && messageInput && sendBtn) {
         const sendMessage = async () => {
@@ -24,15 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
             // Adiciona mensagem de "digitando..."
             const loadingDiv = document.createElement('div');
             loadingDiv.classList.add('message', 'receiver', 'loading');
-            loadingDiv.innerHTML = '<span></span><span></span><span></span>'; // Animação de "digitando"
+            loadingDiv.innerHTML = '<span></span><span></span><span></span>';
             chatMessages.appendChild(loadingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
+            // --- LÓGICA DE CONTEXTO (PRIORIDADE 5) ---
+            const selectedContext = contextSelect.value;
+            let apiUrl = '/api/chat';
+            let bodyData = { message: message };
+
+            if (selectedContext !== 'general') {
+                apiUrl = '/api/chat_contextual';
+                bodyData = { message: message, folder_id: selectedContext };
+            }
+            // --- FIM DA LÓGICA DE CONTEXTO ---
+
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch(apiUrl, { // Usa a URL dinâmica
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify(bodyData) // Usa o body dinâmico
                 });
 
                 chatMessages.removeChild(loadingDiv); // Remove o "digitando"
@@ -47,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 botMessageDiv.classList.add('message', 'receiver');
 
                 if (data.response && data.response.trim() !== "") {
-                    // CONVERTE A RESPOSTA EM HTML E INSERE
                     botMessageDiv.innerHTML = converter.makeHtml(data.response);
                 } else {
                     botMessageDiv.textContent = 'Desculpe, não consegui gerar uma resposta.';
@@ -69,9 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault(); // Impede de pular linha
+                e.preventDefault();
                 sendMessage();
             }
         });
+
+        // Carrega os contextos quando a página é aberta
+        loadContexts();
     }
 });

@@ -2,40 +2,78 @@
 
 {% block title %}{{ folder.name }}{% endblock %}
 
+{% block head_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+{% endblock %}
+
+
 {% block content %}
 <h2 class="page-title">Pasta: {{ folder.name }}</h2>
+
+<div class="form-container" style="background-color: transparent; box-shadow: none; padding: 0; margin-bottom: 20px;">
+    <button class="btn-ia" id="context-chat-open-btn" data-folder-id="{{ folder.id }}">
+        <i data-feather="help-circle"></i>
+        <span>Perguntar à IA sobre esta pasta</span>
+    </button>
+</div>
+
+<style>
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+    .spinning-icon {
+        animation: spin 1.5s linear infinite;
+    }
+</style>
+
 <div class="file-grid">
     {% for file in files %}
     <div class="file-card">
         <a href="#" 
-           onclick="openFileViewer('{{ url_for('visoes.uploaded_file', filename=file.filename) }}', '{{ file.original_filename }}'); return false;" 
+           onclick="openFileViewer('{{ file.url }}', '{{ file.original_filename }}'); return false;" 
            class="file-link">
-            <i data-feather="file-text" class="file-icon"></i>
-            <span>{{ file.original_filename }}</span>
+            
+            {% if file.file_type == 'image' %}
+                <img src="{{ file.url }}" alt="Preview de {{ file.original_filename }}" class="file-thumbnail">
+            {% else %}
+                <i data-feather="{{ file.icon }}" class="file-icon large"></i>
+            {% endif %}
+            
+            <span class="file-name">{{ file.original_filename }}</span>
         </a>
+        
         {% if can_edit %}
         <div class="file-actions">
-            <button class="action-btn-file delete-file-btn" data-file-id="{{ file.id }}"><i data-feather="trash-2"></i></button>
+            <button class="action-btn-file delete-file-btn" data-file-id="{{ file.id }}" title="Excluir">
+                <i data-feather="trash-2"></i>
+            </button>
         </div>
         {% endif %}
     </div>
     {% endfor %}
         
     {% if can_edit %}
-    <div class="file-card upload-card">
-        <form class="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
+    <div class="file-card upload-card" id="upload-card-container">
+        <form class="upload-form" id="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <label for="file-upload" class="upload-label">
                 <i data-feather="upload-cloud"></i>
                 <span>Enviar Arquivo</span>
             </label>
-            <input id="file-upload" name="file" type="file" onchange="this.form.submit()">
+            <input id="file-upload" name="file" type="file">
         </form>
+    </div>
+    
+    <div class="file-card" id="upload-loading-card" style="display: none; justify-content: center; align-items: center; background-color: var(--bg-color);">
+        <i data-feather="loader" class="file-icon large spinning-icon"></i>
+        <span class="file-name">Enviando...</span>
     </div>
     {% endif %}
 </div>
-{% if not files %}
-    <p class="empty-message">Nenhum ficheiro aqui. {% if can_edit %}Comece enviando um!{% endif %}</p>
+{% if not files and not can_edit %}
+    <p class="empty-message">Nenhum ficheiro aqui.</p>
+{% elif not files and can_edit %}
+     <p class="empty-message">Nenhum ficheiro aqui. Comece enviando um!</p>
 {% endif %}
 
 {% if can_edit %}
@@ -51,6 +89,48 @@
     </div>
 </div>
 {% endif %}
+
+
+<div id="context-chat-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Perguntar sobre esta Pasta</h2>
+        <p>A IA irá responder usando apenas os arquivos .pdf, .docx e .txt contidos nesta pasta.</p>
+        
+        <div class="modal-form">
+            <div id="context-chat-response-area" class="chat-messages" style="height: 250px; max-height: 50vh; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-color); padding: 10px; margin-bottom: 15px; overflow-y: auto;">
+                <div class="message receiver">
+                    Olá! Qual é a sua dúvida sobre o conteúdo desta pasta?
+                </div>
+            </div>
+            
+            <label for="context-chat-input">Sua pergunta:</label>
+            <div class="chat-input-container" style="padding: 0;">
+                <input type="text" id="context-chat-input" class="chat-input" placeholder="Ex: 'Resuma o PDF sobre...' ou 'Quais são os tópicos do .docx?'">
+                <button id="context-chat-submit-btn" class="chat-send-btn">
+                    <i data-feather="send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/folders.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const fileUpload = document.getElementById('file-upload');
+    if (fileUpload) {
+        fileUpload.addEventListener('change', () => {
+            document.getElementById('upload-card-container').style.display = 'none';
+            document.getElementById('upload-loading-card').style.display = 'flex';
+            document.getElementById('upload-form').submit();
+        });
+    }
+});
+</script>
 {% endblock %}
 
 {% block page_scripts %}

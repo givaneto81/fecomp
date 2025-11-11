@@ -65,6 +65,9 @@ class Subject(db.Model):
     name = db.Column(db.String(100), nullable=False)
     color = db.Column(db.String(7), nullable=False, default='#007bff')
     
+    # --- NOVA COLUNA (PROPOSTA 3) ---
+    is_featured = db.Column(db.Boolean, default=False, nullable=False)
+    
     # NÍVEL 2.1: A CHAVE DA LÓGICA HÍBRIDA
     # Se user_id != NULL -> Matéria Pessoal
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)

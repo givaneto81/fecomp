@@ -73,9 +73,24 @@ def index():
         courses = Course.query.filter_by(admin_id=session['user_id']).all()
     else: # Professor
         courses = user.courses.all()
-        
-    return render_template('admin/admin_painel.html', courses=courses, form=form, user_role=user.role)
 
+    course_data = []
+    for course in courses:
+        pending_count = db.session.query(Submission.id)\
+            .join(Task, Task.id == Submission.task_id)\
+            .filter(Task.course_id == course.id)\
+            .filter(Submission.grade == None)\
+            .count()
+            
+        course_data.append({
+            'course': course,
+            'members_count': len(course.members), # Pega o N. de membros
+            'pending_submissions': pending_count # N. de envios sem nota
+        })
+        
+    return render_template('admin/admin_painel.html', course_data=course_data, form=form, user_role=user.role)
+
+ 
 @admin_bp.route('/course', methods=['POST'])
 @login_required
 @role_required(['admin'])
@@ -422,3 +437,25 @@ def grade_submission(submission_id):
         flash(f'Nota/feedback para {submission.student.name} atualizado.', 'success')
         
     return redirect(url_for('admin_bp.view_submissions', task_id=submission.task_id))
+
+# --- (PROPOSTA 3) Rota para destacar matérias ---
+@admin_bp.route('/subject/<int:subject_id>/toggle_feature', methods=['POST'])
+@login_required
+@role_required(['admin', 'professor'])
+def toggle_feature_subject(subject_id):
+    form = EmptyForm()
+    subject, course = get_subject_or_404_with_permission(subject_id)
+    if not subject:
+        return course # Retorna o redirect
+    
+    if form.validate_on_submit():
+        try:
+            subject.is_featured = not subject.is_featured
+            db.session.commit()
+            status = "destacada" if subject.is_featured else "não destacada"
+            flash(f'Matéria "{subject.name}" agora está {status}.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao alterar destaque: {e}', 'error')
+    
+    return redirect(url_for('admin_bp.manage_course', course_id=course.id))

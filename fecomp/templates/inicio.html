@@ -23,6 +23,26 @@
     </div>
 </div>
 
+{% if featured_subjects %}
+<div class="mural-avisos-container">
+    <h3 class="page-title" style="font-size: 1.5em; margin-bottom: 15px;">
+        <i data-feather="star" style="width: 20px; height: 20px; vertical-align: text-bottom; color: #f0ad4e;"></i>
+        Conteúdo em Destaque (SSA/ENEM)
+    </h3>
+    <div class="subject-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+        {% for subject in featured_subjects %}
+        <div class="subject-card contrast-card" style="background-color: {{ subject.color }}; min-height: 100px;">
+            <a href="{{ url_for('visoes.pastas_page', subject_id=subject.id) }}" class="subject-link">
+                <span>{{ subject.name }}</span>
+                {% if subject.course %}
+                <small style="font-weight: 400; margin-top: 5px;">(Turma: {{ subject.course.name }})</small>
+                {% endif %}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 {% if has_courses %}
 
     {% if announcements %}

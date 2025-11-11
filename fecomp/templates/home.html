@@ -6,13 +6,15 @@
 <div class="form-container">
     <form id="add-subject-form" class="add-subject-form">
     {{ form.hidden_tag() }}
-        <h3>Criar Nova Matéria</h3>
+        <h3>Criar Nova Matéria Pessoal</h3>
         <input type="text" name="subject_name" placeholder="Nome da Matéria" required>
         <button type="submit">Adicionar</button>
     </form>
 </div>
+
+<h3 class="page-title" style="font-size: 1.5em; margin-bottom: 15px;">Minhas Matérias Pessoais</h3>
 <div class="subject-grid">
-    {% for subject in subjects %}
+    {% for subject in personal_subjects %}
         <div class="subject-card contrast-card" style="background-color: {{ subject.color }};">
             <a href="{{ url_for('visoes.pastas_page', subject_id=subject.id) }}" class="subject-link">
                 {{ subject.name }}
@@ -24,10 +26,28 @@
         </div>
     {% endfor %}
 </div>
-{% if not subjects %}
-    <p class="empty-message">Você ainda não criou nenhuma matéria. Adicione uma acima!</p>
+{% if not personal_subjects %}
+    <p class="empty-message">Você ainda não criou nenhuma matéria pessoal. Adicione uma acima!</p>
 {% endif %}
 
+{% if subjects_by_course %}
+    <h3 class="page-title" style="font-size: 1.5em; margin-top: 40px; margin-bottom: 15px;">Matérias das Turmas</h3>
+    
+    {% for course_name, course_subjects in subjects_by_course.items() %}
+        <h4 style="width: 100%; margin-bottom: 10px;">{{ course_name }}</h4>
+        <div class="subject-grid" style="margin-bottom: 20px;">
+            {% for subject in course_subjects %}
+                <div class="subject-card contrast-card" style="background-color: {{ subject.color }};">
+                    <a href="{{ url_for('visoes.pastas_page', subject_id=subject.id) }}" class="subject-link">
+                        {{ subject.name }}
+                    </a>
+                    </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-message">Nenhuma matéria de turma encontrada.</p>
+    {% endfor %}
+{% endif %}
 <div id="color-subject-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>

@@ -11,7 +11,20 @@
     <div class="chat-header">
         <h2>Chat com a IA</h2>
     </div>
+
+    <div class="chat-context-selector" style="padding: 15px; border-bottom: 1px solid var(--border-color); background-color: var(--bg-color);">
+        <label for="chat-context" style="font-weight: 600; font-size: 0.9em; display: block; margin-bottom: 8px;">
+            <i data-feather="database" style="width: 16px; height: 16px; vertical-align: text-bottom;"></i>
+            Contexto da Conversa:
+        </label>
+        <select id="chat-context" class="login-form-select" style="width: 100%; font-size: 0.9em; padding: 8px;">
+            <option value="general">Chat Geral (Tópicos de Estudo)</option>
+            </select>
+    </div>
     <div class="chat-messages">
+         <div class="message receiver">
+            Olá! Eu sou o Educa AI. Faça uma pergunta geral sobre estudos ou selecione um contexto (uma das suas pastas) no menu acima para eu analisar seus documentos!
+        </div>
     </div>
     <div class="chat-input-container">
         <input type="text" class="chat-input" placeholder="Digite sua dúvida...">

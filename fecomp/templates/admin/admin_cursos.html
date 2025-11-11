@@ -4,155 +4,237 @@
 {% block content %}
 <h2 class="page-title">Gerir Turma: {{ course.name }}</h2>
 
-<div class="form-container">
-    <form action="{{ url_for('admin_bp.post_announcement', course_id=course.id) }}" method="post" class="add-subject-form">
-        {{ form.hidden_tag() }}
-        <h3>Publicar Aviso no Mural</h3>
-        <textarea name="content" placeholder="Escreva o aviso para os alunos..." required rows="3" style="flex-grow: 1; resize: vertical;"></textarea>
-        <button type="submit" style="align-self: flex-start;">Publicar</button>
-    </form>
-    <div style="margin-top: 15px;">
-        <h4>Avisos Recentes:</h4>
-        <ul style="list-style: none; padding-left: 0;">
-            {% for announcement in course.announcements|sort(attribute='timestamp', reverse=True) %}
-                <li style="padding: 5px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                        <p style="margin: 0;">{{ announcement.content }}</p>
-                        <small>({{ announcement.timestamp.strftime('%d/%m %H:%M') }} por {{ announcement.professor.name }})</small>
-                    </div>
-                    {% if announcement.professor_id == session['user_id'] or session['user_role'] == 'admin' %}
-                    <div style="display: flex; gap: 10px; flex-shrink: 0;">
-                        <a href="{{ url_for('admin_bp.edit_announcement', announcement_id=announcement.id) }}" class="profile-btn" style="padding: 2px 8px; font-size: 0.8em; background-color: #f0ad4e;">Editar</a>
-                        <form action="{{ url_for('admin_bp.delete_announcement', announcement_id=announcement.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este aviso?');">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="profile-btn delete" style="padding: 2px 8px; font-size: 0.8em;">Excluir</button>
-                        </form>
-                    </div>
-                    {% endif %}
-                 </li>
-            {% else %}
-                <li>Nenhum aviso publicado.</li>
-            {% endfor %}
-        </ul>
+<style>
+    .tab-nav {
+        display: flex;
+        gap: 5px;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 25px;
+    }
+    .tab-btn {
+        padding: 10px 20px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 1.05em;
+        font-weight: 600;
+        color: var(--text-color-light);
+        border-bottom: 3px solid transparent;
+        transition: color 0.2s, border-bottom-color 0.2s;
+    }
+    .tab-btn:hover {
+        color: var(--text-color);
+    }
+    .tab-btn.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+    .tab-content {
+        display: none; /* Escondido por padrão */
+    }
+    .tab-content.active {
+        display: block; /* Visível quando ativo */
+        animation: fadeInUp 0.4s ease-out; /* Reutilizando sua animação */
+    }
+</style>
+
+<div class="tab-nav">
+    <button class="tab-btn active" data-tab="tab-avisos">Avisos</button>
+    <button class="tab-btn" data-tab="tab-tarefas">Tarefas</button>
+    <button class="tab-btn" data-tab="tab-materias">Matérias</button>
+    {% if session['user_role'] == 'admin' %}
+    <button class="tab-btn" data-tab="tab-membros">Membros</button>
+    {% endif %}
+</div>
+
+<div id="tab-avisos" class="tab-content active">
+    <div class="form-container">
+        <form action="{{ url_for('admin_bp.post_announcement', course_id=course.id) }}" method="post" class="add-subject-form">
+            {{ form.hidden_tag() }}
+            <h3>Publicar Aviso no Mural</h3>
+            <textarea name="content" placeholder="Escreva o aviso para os alunos..." required rows="3" style="flex-grow: 1; resize: vertical;"></textarea>
+            <button type="submit" style="align-self: flex-start;">Publicar</button>
+        </form>
+        <div style="margin-top: 15px;">
+            <h4>Avisos Recentes:</h4>
+            <ul style="list-style: none; padding-left: 0;">
+                {% for announcement in course.announcements|sort(attribute='timestamp', reverse=True) %}
+                    <li style="padding: 5px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <p style="margin: 0;">{{ announcement.content }}</p>
+                            <small>({{ announcement.timestamp.strftime('%d/%m %H:%M') }} por {{ announcement.professor.name }})</small>
+                        </div>
+                        {% if announcement.professor_id == session['user_id'] or session['user_role'] == 'admin' %}
+                        <div style="display: flex; gap: 10px; flex-shrink: 0;">
+                            <a href="{{ url_for('admin_bp.edit_announcement', announcement_id=announcement.id) }}" class="profile-btn" style="padding: 2px 8px; font-size: 0.8em; background-color: #f0ad4e;">Editar</a>
+                            <form action="{{ url_for('admin_bp.delete_announcement', announcement_id=announcement.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este aviso?');">
+                                {{ form.hidden_tag() }}
+                                <button type="submit" class="profile-btn delete" style="padding: 2px 8px; font-size: 0.8em;">Excluir</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                     </li>
+                {% else %}
+                    <li>Nenhum aviso publicado.</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 </div>
 
-
-<div class="form-container">
-    <form action="{{ url_for('admin_bp.create_task', course_id=course.id) }}" method="post" class="modal-form" style="display: flex; flex-direction: column; gap: 10px;">
-        {{ form.hidden_tag() }}
-        <h3>Criar Nova Tarefa</h3>
-        
-        <label for="title-{{ course.id }}">Título:</label>
-        <input type="text" id="title-{{ course.id }}" name="title" required>
-        
-        <label for="description-{{ course.id }}">Descrição:</label>
-        <textarea id="description-{{ course.id }}" name="description" rows="3"></textarea>
-        
-        <label for="due_date-{{ course.id }}">Prazo (opcional):</label>
-        <input type="datetime-local" id="due_date-{{ course.id }}" name="due_date">
-        
-        <label for="subject_id-{{ course.id }}">Matéria (opcional):</label>
-        <select id="subject_id-{{ course.id }}" name="subject_id">
-            <option value="None">Geral da Turma</option> 
-            {% for subject in course.subjects %}
-            <option value="{{ subject.id }}">{{ subject.name }}</option>
-            {% endfor %}
-        </select>
-        
-        <button type="submit" class="btn-entrar" style="align-self: flex-start;">Criar Tarefa</button>
-    </form>
-     <div style="margin-top: 15px;">
-        <h4>Tarefas Criadas:</h4>
-        <ul style="list-style: none; padding-left: 0;">
-            {% for task in course.tasks|sort(attribute='created_at', reverse=True) %}
-                 <li style="padding: 5px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                        <a href="{{ url_for('admin_bp.view_submissions', task_id=task.id) }}">{{ task.title }}</a> 
-                        <small> (Prazo: {{ task.due_date.strftime('%d/%m/%Y %H:%M') if task.due_date else 'N/A' }})</small>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <a href="{{ url_for('admin_bp.edit_task', task_id=task.id) }}" class="profile-btn" style="padding: 2px 8px; font-size: 0.8em; background-color: #f0ad4e;">Editar</a>
-                        <form action="{{ url_for('admin_bp.delete_task', task_id=task.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta tarefa? Todos os envios relacionados a ela serão perdidos.');">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="profile-btn delete" style="padding: 2px 8px; font-size: 0.8em;">Excluir</button>
-                        </form>
-                    </div>
-                 </li>
-            {% else %}
-                <li>Nenhuma tarefa criada para esta turma.</li>
-            {% endfor %}
-        </ul>
+<div id="tab-tarefas" class="tab-content">
+    <div class="form-container">
+        <form action="{{ url_for('admin_bp.create_task', course_id=course.id) }}" method="post" class="modal-form" style="display: flex; flex-direction: column; gap: 10px;">
+            {{ form.hidden_tag() }}
+            <h3>Criar Nova Tarefa</h3>
+            
+            <label for="title-{{ course.id }}">Título:</label>
+            <input type="text" id="title-{{ course.id }}" name="title" required>
+            
+            <label for="description-{{ course.id }}">Descrição:</label>
+            <textarea id="description-{{ course.id }}" name="description" rows="3"></textarea>
+            
+            <label for="due_date-{{ course.id }}">Prazo (opcional):</label>
+            <input type="datetime-local" id="due_date-{{ course.id }}" name="due_date">
+            
+            <label for="subject_id-{{ course.id }}">Matéria (opcional):</label>
+            <select id="subject_id-{{ course.id }}" name="subject_id">
+                <option value="None">Geral da Turma</option> 
+                {% for subject in course.subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="btn-entrar" style="align-self: flex-start;">Criar Tarefa</button>
+        </form>
+         <div style="margin-top: 15px;">
+            <h4>Tarefas Criadas:</h4>
+            <ul style="list-style: none; padding-left: 0;">
+                {% for task in course.tasks|sort(attribute='created_at', reverse=True) %}
+                     <li style="padding: 5px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <a href="{{ url_for('admin_bp.view_submissions', task_id=task.id) }}">{{ task.title }}</a> 
+                            <small> (Prazo: {{ task.due_date.strftime('%d/%m/%Y %H:%M') if task.due_date else 'N/A' }})</small>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="{{ url_for('admin_bp.edit_task', task_id=task.id) }}" class="profile-btn" style="padding: 2px 8px; font-size: 0.8em; background-color: #f0ad4e;">Editar</a>
+                            <form action="{{ url_for('admin_bp.delete_task', task_id=task.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta tarefa? Todos os envios relacionados a ela serão perdidos.');">
+                                {{ form.hidden_tag() }}
+                                <button type="submit" class="profile-btn delete" style="padding: 2px 8px; font-size: 0.8em;">Excluir</button>
+                            </form>
+                        </div>
+                     </li>
+                {% else %}
+                    <li>Nenhuma tarefa criada para esta turma.</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 </div>
 
-
-<div class="form-container">
-    <form action="{{ url_for('admin_bp.add_course_subject', course_id=course.id) }}" method="post" class="add-subject-form">
-        {{ form.hidden_tag() }}
-        <h3>Adicionar Matéria à Turma</h3>
-        <input type="text" name="subject_name" placeholder="Nome da Matéria (Ex: Redação)" required>
-        <button type="submit">Adicionar</button>
-    </form>
-    <div style="margin-top: 15px;">
-        <h4>Matérias da Turma:</h4>
-        <ul style="list-style: none; padding-left: 0;">
-            {% for subject in course.subjects %}
-                <li style="padding: 5px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                    <span>{{ subject.name }}</span>
-                    <div style="display: flex; gap: 10px;">
-                        <a href="{{ url_for('admin_bp.edit_course_subject', subject_id=subject.id) }}" class="profile-btn" style="padding: 2px 8px; font-size: 0.8em; background-color: #f0ad4e;">Editar</a>
-                        <form action="{{ url_for('admin_bp.delete_course_subject', subject_id=subject.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta matéria? Todos os ficheiros e pastas dentro dela serão perdidos.');">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="profile-btn delete" style="padding: 2px 8px; font-size: 0.8em;">Excluir</button>
-                        </form>
-                    </div>
-                </li>
-            {% else %}
-                <li>Nenhuma matéria adicionada a esta turma.</li>
-            {% endfor %}
-        </ul>
+<div id="tab-materias" class="tab-content">
+    <div class="form-container">
+        <form action="{{ url_for('admin_bp.add_course_subject', course_id=course.id) }}" method="post" class="add-subject-form">
+            {{ form.hidden_tag() }}
+            <h3>Adicionar Matéria à Turma</h3>
+            <input type="text" name="subject_name" placeholder="Nome da Matéria (Ex: Redação)" required>
+            <button type="submit">Adicionar</button>
+        </form>
+        <div style="margin-top: 15px;">
+            <h4>Matérias da Turma:</h4>
+            <ul style="list-style: none; padding-left: 0;">
+                {% for subject in course.subjects %}
+                    <li style="padding: 5px 0; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <span>
+                            {{ subject.name }}
+                            {% if subject.is_featured %}
+                                <i data-feather="star" style="width: 16px; height: 16px; color: #f0ad4e; fill: #f0ad4e; vertical-align: text-bottom;"></i>
+                            {% endif %}
+                        </span>
+                        <div style="display: flex; gap: 10px;">
+                            
+                            <form action="{{ url_for('admin_bp.toggle_feature_subject', subject_id=subject.id) }}" method="POST" style="display: inline;">
+                                {{ form.hidden_tag() }}
+                                <button type="submit" class="profile-btn feature-btn {% if subject.is_featured %}featured{% endif %}" title="Destacar matéria">
+                                    <i data-feather="star"></i>
+                                </button>
+                            </form>
+                            <a href="{{ url_for('admin_bp.edit_course_subject', subject_id=subject.id) }}" class="profile-btn" style="padding: 2px 8px; font-size: 0.8em; background-color: #f0ad4e;">Editar</a>
+                            <form action="{{ url_for('admin_bp.delete_course_subject', subject_id=subject.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir esta matéria? Todos os ficheiros e pastas dentro dela serão perdidos.');">
+                                {{ form.hidden_tag() }}
+                                <button type="submit" class="profile-btn delete" style="padding: 2px 8px; font-size: 0.8em;">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+                {% else %}
+                    <li>Nenhuma matéria adicionada a esta turma.</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 </div>
 
 {% if session['user_role'] == 'admin' %}
-<div class="form-container">
-    <h3>Membros da Turma ({{ course.members|length }})</h3>
-    <ul style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto; margin-bottom: 20px;">
-    {% for member in course.members %}
-        <li style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border-color);">
-            <span>{{ member.name }} ({{ member.role }}) - {{ member.email }}</span>
-            <form action="{{ url_for('admin_bp.remove_member', course_id=course.id, user_id=member.id) }}" method="POST" style="display: inline;">
-                {{ form.hidden_tag() }}
-                <button type="submit" class="profile-btn delete" style="padding: 2px 5px; font-size: 0.8em;">Remover</button>
-            </form>
-        </li>
-    {% else %}
-        <li>Nenhum membro nesta turma.</li>
-    {% endfor %}
-    </ul>
+<div id="tab-membros" class="tab-content">
+    <div class="form-container">
+        <h3>Membros da Turma ({{ course.members|length }})</h3>
+        <ul style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto; margin-bottom: 20px;">
+        {% for member in course.members %}
+            <li style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border-color);">
+                <span>{{ member.name }} ({{ member.role }}) - {{ member.email }}</span>
+                <form action="{{ url_for('admin_bp.remove_member', course_id=course.id, user_id=member.id) }}" method="POST" style="display: inline;">
+                    {{ form.hidden_tag() }}
+                    <button type="submit" class="profile-btn delete" style="padding: 2px 5px; font-size: 0.8em;">Remover</button>
+                </form>
+            </li>
+        {% else %}
+            <li>Nenhum membro nesta turma.</li>
+        {% endfor %}
+        </ul>
+        
+        <hr style="margin: 20px 0;">
     
-    <hr style="margin: 20px 0;">
-
-    <h3>Adicionar Membro à Turma</h3>
-    {% if non_members %}
-    <form action="{{ url_for('admin_bp.add_member', course_id=course.id) }}" method="POST" class="add-subject-form">
-        {{ form.hidden_tag() }}
-        <select name="user_id" style="flex-grow: 1;">
-            {% for user in non_members %}
-            <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Adicionar</button>
-    </form>
-    {% else %}
-    <p>Todos os utilizadores já estão nesta turma ou não há outros utilizadores no sistema.</p>
-    {% endif %}
+        <h3>Adicionar Membro à Turma</h3>
+        {% if non_members %}
+        <form action="{{ url_for('admin_bp.add_member', course_id=course.id) }}" method="POST" class="add-subject-form">
+            {{ form.hidden_tag() }}
+            <select name="user_id" style="flex-grow: 1;">
+                {% for user in non_members %}
+                <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Adicionar</button>
+        </form>
+        {% else %}
+        <p>Todos os utilizadores já estão nesta turma ou não há outros utilizadores no sistema.</p>
+        {% endif %}
+    </div>
 </div>
 {% endif %}
-
 <div style="margin-top: 30px; text-align: center;">
     <a href="{{ url_for('admin_bp.index') }}" class="profile-btn" style="background-color: var(--text-color-light);">Voltar ao Painel</a>
 </div>
 
+{% endblock %}
+
+
+{% block page_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove 'active' de todos
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            // Adiciona 'active' ao clicado
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -77,6 +77,14 @@ def pagina_inicio():
                                     .order_by(Announcement.timestamp.desc()).limit(5).all()
     
     has_courses_check = bool(user_courses)
+    
+    # --- MODIFICAÇÃO (PROPOSTA 3) ---
+    # Busca matérias destacadas (apenas de cursos, já que pessoais não são para todos)
+    featured_subjects = Subject.query.filter(
+        Subject.is_featured == True,
+        Subject.course_id.isnot(None)
+    ).all()
+    # --- FIM DA MODIFICAÇÃO ---
 
     if user_role == 'aluno':
         submitted_task_ids = [sub.task_id for sub in Submission.query.filter_by(student_id=user_id).all()]
@@ -89,13 +97,15 @@ def pagina_inicio():
         return render_template('inicio.html', 
                              announcements=announcements, 
                              pending_tasks=pending_tasks,
-                             has_courses=has_courses_check)
+                             has_courses=has_courses_check,
+                             featured_subjects=featured_subjects) # Passa para o template
     
     else: 
         return render_template('inicio.html', 
                              announcements=announcements,
                              pending_tasks=None,
-                             has_courses=has_courses_check)
+                             has_courses=has_courses_check,
+                             featured_subjects=featured_subjects) # Passa para o template
 
 # nível 2.2: rota 'pagina_materias'
 @views_bp.route('/materias') # type: ignore
@@ -170,11 +180,41 @@ def folders(folder_id):
             flash('Você não tem permissão para ver esta pasta.', 'error')
             return redirect(url_for('visoes.pagina_materias'))
 
-    files = File.query.filter_by(folder_id=folder.id).order_by(File.original_filename).all()
+    # --- INÍCIO DA MODIFICAÇÃO (VISUALIZAÇÃO DE ARQUIVO) ---
+    files_data = []
+    files_from_db = File.query.filter_by(folder_id=folder.id).order_by(File.original_filename).all()
+    
+    for file in files_from_db:
+        ext = file.original_filename.split('.')[-1].lower()
+        icon = 'file' # Padrão
+        file_type = 'other'
+        
+        if ext in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg']:
+            icon = 'image'
+            file_type = 'image'
+        elif ext == 'pdf':
+            icon = 'file-text'
+            file_type = 'pdf'
+        elif ext in ['doc', 'docx']:
+            icon = 'file-text'
+            file_type = 'word'
+        elif ext in ['txt', 'md']:
+            icon = 'file-text'
+            file_type = 'text'
+        
+        files_data.append({
+            'id': file.id,
+            'filename': file.filename,
+            'original_filename': file.original_filename,
+            'icon': icon,
+            'file_type': file_type,
+            'url': url_for('visoes.uploaded_file', filename=file.filename)
+        })
+    # --- FIM DA MODIFICAÇÃO ---
     
     return render_template('folders.html', 
                            folder=folder, 
-                           files=files, 
+                           files=files_data, # Passa a nova lista
                            form=form,
                            can_edit=can_edit) 
 
@@ -334,6 +374,26 @@ def upload_file(folder_id):
             new_file = File(filename=filename, original_filename=original_filename, folder_id=folder_id)
             db.session.add(new_file)
             db.session.commit()
+            
+            # --- MODIFICAÇÃO (PROPOSTA 2) ---
+            try:
+                user_role = session.get('user_role')
+                if subject.course_id and user_role in ['admin', 'professor']:
+                    user = User.query.get(session['user_id'])
+                    
+                    anuncio_content = f"O professor {user.name} adicionou o ficheiro '{original_filename}' à matéria '{subject.name}'."
+                    
+                    new_announcement = Announcement(
+                        content=anuncio_content,
+                        course_id=subject.course_id,
+                        professor_id=session['user_id']
+                    )
+                    db.session.add(new_announcement)
+                    db.session.commit()
+            except Exception as e:
+                print(f"Erro ao criar anúncio automático: {e}")
+                db.session.rollback()
+
             flash('Arquivo enviado com sucesso!', 'success')
     return redirect(url_for('visoes.folders', folder_id=folder_id))
 

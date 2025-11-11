@@ -54,10 +54,10 @@ def login():
 
         if utilizador and check_password_hash(utilizador.password_hash, senha):
             
-            """if utilizador.email == 'admin@admin' and utilizador.role != 'admin':
+            if utilizador.email == 'admin@admin' and utilizador.role != 'admin':
                 utilizador.role = 'admin'
                 db.session.commit()
-                flash('Privilégios de Administrador concedidos!', 'success')""" 
+                flash('Privilégios de Administrador concedidos!', 'success')
 
             session.clear()
             session['user_id'] = utilizador.id

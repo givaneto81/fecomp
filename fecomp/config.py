@@ -11,3 +11,4 @@ class Config:
     UPLOAD_FOLDER = 'fecomp/uploads'
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
     DEBUG = True
+    MAX_CONTENT_LENGTH = 100 * 1024 * 1024
