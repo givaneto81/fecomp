@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!isMobile()) {
                     sidebar.classList.remove('collapsed');
                     mainContainer.classList.remove('sidebar-collapsed');
+                    sidebar.classList.add('collapsed');
                 }
             });
 

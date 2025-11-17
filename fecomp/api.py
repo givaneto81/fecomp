@@ -13,6 +13,16 @@ from .visoes import check_permission, login_required
 
 api_bp = Blueprint('api', __name__)
 
+DICAS = [
+    "Revise as funções logarítmicas — elas caem muito no ENEM!",
+    "Leia uma redação nota 1000 e anote as estruturas usadas.",
+    "Treine sua interpretação de texto em inglês.",
+    "Reveja os ciclos biogeoquímicos (SSA 2 adora cobrar isso!).",
+    "Não se esqueça de estudar a história de Pernambuco para o SSA.",
+    "Pratique a resolução da prova do ENEM por área de conhecimento, cronometrando o tempo.",
+    "Crie flashcards para memorizar fórmulas de Física e Química."
+]
+
 # --- ROTA DE CHAT GERAL (AGORA COM GPT) ---
 @api_bp.route('/chat', methods=['POST'])
 @csrf.exempt
