@@ -1,5 +1,4 @@
 import os
-import google.generativeai as genai
 from flask import Flask
 from .config import Config
 from .extensions import db, csrf
