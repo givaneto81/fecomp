@@ -15,13 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Em desktop, a sidebar fica visível
             sidebar.classList.remove('active');
             mainContainer.classList.add('sidebar-collapsed'); // Começa recolhida
+            sidebar.classList.add('collapsed'); // <-- A LINHA NO LUGAR CERTO!
 
             // Expande ao passar o rato
             sidebar.addEventListener('mouseenter', () => {
                 if (!isMobile()) {
                     sidebar.classList.remove('collapsed');
                     mainContainer.classList.remove('sidebar-collapsed');
-                    sidebar.classList.add('collapsed');
+                    // TIREI O ERRO DAQUI
                 }
             });
 

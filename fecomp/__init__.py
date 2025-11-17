@@ -30,6 +30,17 @@ def create_app():
     # NÍVEL 4.3: Regista o novo blueprint
     app.register_blueprint(admin_bp) 
 
+    @app.context_processor
+    def inject_static_version():
+        def get_version(filename):
+            try:
+                file_path = os.path.join(app.root_path, 'static', filename)
+                timestamp = int(os.path.getmtime(file_path))
+                return timestamp
+            except Exception as e:
+                return 1
+        return dict(get_version=get_version)
+
     with app.app_context():
         db.create_all()
 
