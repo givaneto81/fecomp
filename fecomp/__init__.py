@@ -11,10 +11,11 @@ def create_app():
     db.init_app(app)
     csrf.init_app(app)
 
-    if app.config['GEMINI_API_KEY']:
-        genai.configure(api_key=app.config['GEMINI_API_KEY'])
-    else:
-        print("AVISO: Chave da API do Gemini não encontrada.")
+    if not app.config['OPENAI_API_KEY']:
+        print("AVISO: Chave da API do OpenAi não encontrada.")
+        
+    if not app.config['YOUTUBE_API_KEY']:
+        print("AVISO: Chave da API do Youtube não encontrada.")
 
     from .autenticacao import auth_bp
     from .visoes import views_bp

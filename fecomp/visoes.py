@@ -210,8 +210,7 @@ def folders(folder_id):
             'file_type': file_type,
             'url': url_for('visoes.uploaded_file', filename=file.filename)
         })
-    # --- FIM DA MODIFICAÇÃO ---
-    
+   
     return render_template('folders.html', 
                            folder=folder, 
                            files=files_data, # Passa a nova lista

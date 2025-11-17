@@ -3,11 +3,10 @@ import datetime
 from .models import User, Course, Subject, Task, Announcement, Submission
 from .extensions import db
 from .forms import EmptyForm
-# Reutiliza os decorators
 from .visoes import login_required, role_required 
 
 admin_bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
-
+    
 # --- FUNÇÕES DE VERIFICAÇÃO DE PERMISSÃO (HELPERS) ---
 def get_task_or_404_with_permission(task_id):
     """ Busca uma tarefa e verifica se o usuário (admin/professor) tem permissão. """

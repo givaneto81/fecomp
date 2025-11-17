@@ -9,6 +9,7 @@ class Config:
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = 'fecomp/uploads'
-    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+    YOUTUBE_API_KEY = os.environ.get('YOUTUBE_API_KEY')
     DEBUG = True
     MAX_CONTENT_LENGTH = 100 * 1024 * 1024
