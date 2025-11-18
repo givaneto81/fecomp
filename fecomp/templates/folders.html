@@ -24,6 +24,28 @@
     .spinning-icon {
         animation: spin 1.5s linear infinite;
     }
+    /* Estilos pro preview da lista de arquivos */
+    #file-list-preview {
+        display: none; 
+        width: 100%; 
+        text-align: left; 
+        margin-top: 15px; 
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+    #file-list-preview strong {
+        font-size: 1em; 
+        color: var(--text-color);
+    }
+    #file-list {
+        font-size: 0.9em; 
+        color: var(--text-color-light); 
+        max-height: 100px; 
+        overflow-y: auto; 
+        list-style-type: disc; 
+        padding-left: 25px;
+        margin-top: 5px;
+    }
 </style>
 
 <div class="file-grid">
@@ -54,13 +76,23 @@
         
     {% if can_edit %}
     <div class="file-card upload-card" id="upload-card-container">
-        <form class="upload-form" id="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data">
+        <form class="upload-form" id="upload-form" action="{{ url_for('visoes.upload_file', folder_id=folder.id) }}" method="post" enctype="multipart/form-data" style="padding: 15px;">
             {{ form.hidden_tag() }}
-            <label for="file-upload" class="upload-label">
+            
+            <label for="file-upload" class="upload-label" style="width: 100%; text-align: center;">
                 <i data-feather="upload-cloud"></i>
-                <span>Enviar Arquivo</span>
+                <span>Enviar Arquivo(s)</span>
             </label>
-            <input id="file-upload" name="file" type="file">
+            
+            <input id="file-upload" name="file" type="file" multiple>
+
+            <div id="file-list-preview">
+                <strong>Fila de upload:</strong>
+                <ul id="file-list"></ul>
+            </div>
+            <button type="submit" id="confirm-upload-btn" class="btn-entrar" style="margin-top: 20px; width: 100%; display: none;">
+                Confirmar Envio
+            </button>
         </form>
     </div>
     
@@ -122,15 +154,43 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const fileUpload = document.getElementById('file-upload');
-    if (fileUpload) {
+    const form = document.getElementById('upload-form');
+    const fileListPreview = document.getElementById('file-list-preview');
+    const fileList = document.getElementById('file-list');
+    const confirmBtn = document.getElementById('confirm-upload-btn');
+    const uploadCardContainer = document.getElementById('upload-card-container');
+    const loadingCard = document.getElementById('upload-loading-card');
+
+    if (fileUpload && form && confirmBtn) {
+        
+        // 1. Ouve a mudança no input de arquivo
         fileUpload.addEventListener('change', () => {
-            document.getElementById('upload-card-container').style.display = 'none';
-            document.getElementById('upload-loading-card').style.display = 'flex';
-            document.getElementById('upload-form').submit();
+            fileList.innerHTML = ''; // Limpa a lista antiga
+            const files = fileUpload.files;
+            
+            if (files.length > 0) {
+                // Mostra a lista e o botão
+                for (let i = 0; i < files.length; i++) {
+                    const li = document.createElement('li');
+                    li.textContent = files[i].name;
+                    fileList.appendChild(li);
+                }
+                fileListPreview.style.display = 'block';
+                confirmBtn.style.display = 'block';
+            } else {
+                // Esconde se o usuário cancelar
+                fileListPreview.style.display = 'none';
+                confirmBtn.style.display = 'none';
+            }
+        });
+
+        // 2. Ouve o ENVIO do form
+        form.addEventListener('submit', () => {
+            // Mostra o loading e esconde o card de upload
+            if (uploadCardContainer) uploadCardContainer.style.display = 'none';
+            if (loadingCard) loadingCard.style.display = 'flex';
         });
     }
 });
 </script>
-
-<script src="{{ url_for('static', filename='js/folders.js') }}"></script>
 {% endblock %}

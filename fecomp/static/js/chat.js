@@ -1,16 +1,15 @@
-// fecomp/static/js/chat.js
-document.addEventListener('DOMContentLoaded', () => {
+ocument.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.querySelector('.chat-messages');
     const messageInput = document.querySelector('.chat-input');
     const sendBtn = document.querySelector('.chat-send-btn');
     const contextSelect = document.getElementById('chat-context'); // <<< NOVO
     
-    // Inicializa o conversor de Markdown
     const converter = new showdown.Converter();
 
-    // <<< NOVA FUNÇÃO (PRIORIDADE 5) >>>
-    // Carrega os contextos (pastas) do usuário no dropdown
     const loadContexts = async () => {
+        const messageInput_loader = document.querySelector('.chat-input');
+        const sendBtn_loader = document.querySelector('.chat-send-btn');
+
         try {
             const response = await fetch('/api/user_contexts');
             if (!response.ok) throw new Error('Falha ao buscar contextos');
@@ -30,11 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Erro ao carregar contextos:", error);
-            // Não bloqueia o chat, apenas o RAG
+        } finally {
+            messageInput_loader.disabled = false;
+            sendBtn_loader.disabled = false;
+            messageInput_loader.placeholder = 'Digite sua dúvida...';
         }
     };
-    // <<< FIM DA NOVA FUNÇÃO >>>
-
 
     if (chatMessages && messageInput && sendBtn) {
         const sendMessage = async () => {

@@ -41,4 +41,20 @@ document.addEventListener('DOMContentLoaded', () => {
             handleThemeChange(newTheme);
         });
     }
+
+    // --- CÓDIGO NOVO (PONTO 3) ---
+    // --- LÓGICA PARA MENSAGENS FLASH ---
+    const flashMessages = document.querySelectorAll('.alert-flash');
+    flashMessages.forEach(function(message) {
+        // Define um timeout para fazer a mensagem desaparecer
+        setTimeout(() => {
+            message.style.transition = 'opacity 0.5s ease-out';
+            message.style.opacity = '0';
+            // Remove o elemento do DOM após a transição
+            setTimeout(() => { 
+                message.style.display = 'none'; 
+            }, 500); // Tempo da transição
+        }, 5000); // 5 segundos
+    });
+    // --- FIM DA LÓGICA FLASH ---
 });

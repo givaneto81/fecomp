@@ -4,8 +4,18 @@
 
 {% block content %}
 <div class="profile-container">
-    <img src="{{ url_for('static', filename='imagens/perfil.png') }}" alt="Foto de Perfil" class="profile-pic">
-    <h2 class="profile-name">Nome: {{ user.name }}</h2>
+    <img src="{{ url_for('static', filename='avatars/' + user.profile_pic) }}" 
+         alt="Foto de Perfil" 
+         class="profile-pic"
+         onerror="this.src='{{ url_for('static', filename='avatars/default_avatar.png') }}';">
+    
+    <div class="avatar-upload-form" style="margin-top: 20px; width: 100%;">
+        <form action="{{ url_for('visoes.upload_avatar') }}" method="post" enctype="multipart/form-data" class="modal-form" style="margin-top: 0; gap: 10px;">
+            {{ form.hidden_tag() }} <input type="file" name="avatar" accept="image/png, image/jpeg, image/gif" required style="flex-grow: 1;">
+            <button type="submit" class="profile-btn" style="padding: 8px 15px; font-size: 0.9em; margin: 0; flex-shrink: 0;">Enviar Foto</button>
+        </form>
+    </div>
+    <h2 class="profile-name" style="margin-top: 20px;">Nome: {{ user.name }}</h2>
     <h3 class="profile-email">Email: {{ user.email }}</h3>
     <div class="profile-actions">
         <button id="edit-name-btn" class="profile-btn">Editar Nome</button>

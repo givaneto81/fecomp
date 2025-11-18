@@ -19,6 +19,11 @@ class User(db.Model):
     # Funções possíveis: 'aluno', 'professor', 'admin' (dono do cursinho)
     role = db.Column(db.String(20), nullable=False, default='aluno')
     
+    profile_pic = db.Column(db.String(255), 
+                          nullable=False, 
+                          default='default_avatar.png', 
+                          server_default='default_avatar.png')
+    
     tutorial_concluido = db.Column(db.Boolean, default=False, nullable=False)
 
     # NÍVEL 2: Matérias Pessoais (user_id preenchido)

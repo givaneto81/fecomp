@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from .config import Config
 from .extensions import db, csrf
+from flask_migrate import Migrate
 
 def create_app():
     app = Flask(__name__)
@@ -9,6 +10,8 @@ def create_app():
 
     db.init_app(app)
     csrf.init_app(app)
+    
+    migrate = Migrate(app, db, render_as_batch=True) 
 
     if not app.config['OPENAI_API_KEY']:
         print("AVISO: Chave da API do OpenAi não encontrada.")
@@ -20,14 +23,12 @@ def create_app():
     from .visoes import views_bp
     from .api import api_bp
     from .tutorial import tutorial_bp
-    # NÍVEL 4.3: Importa o novo blueprint
     from .admin import admin_bp 
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(views_bp)
     app.register_blueprint(api_bp, url_prefix='/api')
     app.register_blueprint(tutorial_bp)
-    # NÍVEL 4.3: Regista o novo blueprint
     app.register_blueprint(admin_bp) 
 
     @app.context_processor
@@ -42,6 +43,6 @@ def create_app():
         return dict(get_version=get_version)
 
     with app.app_context():
-        db.create_all()
+        pass
 
     return app

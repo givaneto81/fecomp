@@ -6,10 +6,22 @@ from functools import wraps
 
 # --- models atualizados ---
 from .models import User, Subject, Folder, File, Task, Submission, Announcement, Course
-from .extensions import db
+# --- csrf ACRESCENTADO AQUI ---
+from .extensions import db, csrf
 from .forms import EmptyForm
 
 views_bp = Blueprint('visoes', __name__)
+
+# --- CONSTANTES PARA UPLOAD DE AVATAR (NOVO) ---
+# A gente salva em /static/avatars/
+AVATAR_UPLOAD_FOLDER = 'static/avatars'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+# --- FIM DAS CONSTANTES ---
+
 
 # --- decorators de autenticação e função (nível 1 & 2) ---
 
@@ -358,30 +370,42 @@ def upload_file(folder_id):
         return redirect(url_for('visoes.folders', folder_id=folder_id))
 
     if form.validate_on_submit():
-        if 'file' not in request.files or request.files['file'].filename == '':
+        # --- MUDANÇA (SUPORTE A MÚLTIPLOS ARQUIVOS) ---
+        files = request.files.getlist('file') # Pega a lista de arquivos
+        
+        if not files or files[0].filename == '':
             flash('Nenhum arquivo selecionado.', 'error')
             return redirect(url_for('visoes.folders', folder_id=folder_id))
         
-        file = request.files['file']
-        if file:
-            original_filename = secure_filename(file.filename)
-            filename = f"user_{session['user_id']}_folder_{folder_id}_{original_filename}"
-            upload_folder = current_app.config['UPLOAD_FOLDER']
-            os.makedirs(upload_folder, exist_ok=True)
-            file.save(os.path.join(upload_folder, filename))
-            
-            new_file = File(filename=filename, original_filename=original_filename, folder_id=folder_id)
-            db.session.add(new_file)
-            db.session.commit()
-            
-            # --- MODIFICAÇÃO (PROPOSTA 2) ---
+        files_uploaded_count = 0
+        for file in files:
+            if file:
+                original_filename = secure_filename(file.filename)
+                # Garante um nome único
+                filename = f"user_{session['user_id']}_folder_{folder_id}_{original_filename}"
+                upload_folder = current_app.config['UPLOAD_FOLDER']
+                os.makedirs(upload_folder, exist_ok=True)
+                file.save(os.path.join(upload_folder, filename))
+                
+                new_file = File(filename=filename, original_filename=original_filename, folder_id=folder_id)
+                db.session.add(new_file)
+                files_uploaded_count += 1
+        
+        # Salva tudo no banco de uma vez
+        db.session.commit()
+        
+        # --- MODIFICAÇÃO (PROPOSTA 2) - Anúncio automático ---
+        if files_uploaded_count > 0:
             try:
                 user_role = session.get('user_role')
                 if subject.course_id and user_role in ['admin', 'professor']:
                     user = User.query.get(session['user_id'])
                     
-                    anuncio_content = f"O professor {user.name} adicionou o ficheiro '{original_filename}' à matéria '{subject.name}'."
-                    
+                    if files_uploaded_count == 1:
+                        anuncio_content = f"O professor {user.name} adicionou o ficheiro '{files[0].filename}' à matéria '{subject.name}'."
+                    else:
+                        anuncio_content = f"O professor {user.name} adicionou {files_uploaded_count} novos ficheiros à matéria '{subject.name}'."
+
                     new_announcement = Announcement(
                         content=anuncio_content,
                         course_id=subject.course_id,
@@ -393,7 +417,8 @@ def upload_file(folder_id):
                 print(f"Erro ao criar anúncio automático: {e}")
                 db.session.rollback()
 
-            flash('Arquivo enviado com sucesso!', 'success')
+            flash(f'{files_uploaded_count} arquivo(s) enviado(s) com sucesso!', 'success')
+            
     return redirect(url_for('visoes.folders', folder_id=folder_id))
 
 @views_bp.route('/update_subject_color/<int:subject_id>', methods=['POST'])
@@ -634,3 +659,59 @@ def delete_file(file_id):
             flash(f'Erro ao excluir o ficheiro: {e}', 'error')
             
     return redirect(url_for('visoes.folders', folder_id=folder_id))
+
+
+# --- NOVA ROTA PARA UPLOAD DE AVATAR ---
+@views_bp.route('/upload_avatar', methods=['POST'])
+@csrf.exempt # Isenção de CSRF (mais fácil pro tutorial)
+@login_required
+def upload_avatar():
+    if 'avatar' not in request.files:
+        flash('Nenhum arquivo selecionado.', 'error')
+        return redirect(request.referrer or url_for('visoes.pagina_inicio'))
+    
+    file = request.files['avatar']
+    
+    if file.filename == '':
+        flash('Nenhum arquivo selecionado.', 'error')
+        return redirect(request.referrer or url_for('visoes.pagina_inicio'))
+        
+    if file and allowed_file(file.filename):
+        user = User.query.get(session['user_id'])
+        original_filename = secure_filename(file.filename)
+        extension = original_filename.rsplit('.', 1)[1].lower()
+        
+        # Cria nome de arquivo único: user_1.png, user_2.jpg
+        filename = f"user_{user.id}.{extension}"
+        
+        # Pega o caminho absoluto para salvar
+        avatar_dir = os.path.join(current_app.root_path, AVATAR_UPLOAD_FOLDER)
+        avatar_save_path = os.path.join(avatar_dir, filename)
+        
+        # Garante que a pasta /static/avatars/ existe
+        os.makedirs(avatar_dir, exist_ok=True)
+        
+        try:
+            # Apaga o avatar antigo (se existir e não for o default)
+            if user.profile_pic != 'default_avatar.png':
+                old_file_path = os.path.join(avatar_dir, user.profile_pic)
+                if os.path.exists(old_file_path):
+                    os.remove(old_file_path)
+            
+            # Salva o arquivo novo
+            file.save(avatar_save_path)
+            
+            # Atualiza o nome no banco
+            user.profile_pic = filename
+            db.session.commit()
+            flash('Foto de perfil atualizada!', 'success')
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao salvar a foto: {e}', 'error')
+        
+    else:
+        flash('Tipo de arquivo não permitido. Use .png, .jpg, .jpeg ou .gif.', 'error')
+
+    # Redireciona de volta para a página que o usuário estava (tutorial ou perfil)
+    return redirect(request.referrer or url_for('visoes.pagina_inicio'))

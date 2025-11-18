@@ -11,33 +11,74 @@
 <body class="tutorial-page">
 
     <div class="tutorial-container">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="font-size: 0.9em; padding: 8px;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <div class="tutorial-slider">
 
             {% if user_role == 'aluno' %}
             <div class="tutorial-etapa" id="etapa-1">
                 <h2>🎓 Bem-vindo(a) ao Educa AI!</h2>
-                <p>O seu novo assistente de estudos para o SSA e ENEM. Aqui, pode organizar todo o seu material e tirar dúvidas com uma IA poderosa.</p>
+                <p>O seu novo assistente de estudos para o SSA e ENEM. Vamos configurar seu perfil rapidamente.</p>
             </div>
+            
             <div class="tutorial-etapa" id="etapa-2">
+                <h2>📸 Configure seu Perfil</h2>
+                <p>Que tal uma foto de perfil? (Ou pode pular clicando em "Próximo")</p>
+                <img src="{{ url_for('static', filename='avatars/' + user.profile_pic) }}" 
+                     alt="Foto de Perfil" 
+                     class="profile-pic-tutorial"
+                     onerror="this.src='{{ url_for('static', filename='avatars/default_avatar.png') }}';">
+                
+                <form action="{{ url_for('visoes.upload_avatar') }}" method="post" enctype="multipart/form-data" class="tutorial-upload-form">
+                    <input type="file" name="avatar" accept="image/png, image/jpeg, image/gif" required>
+                    <button type="submit" class="btn-tutorial-upload">Enviar Foto</button>
+                </form>
+            </div>
+            
+            <div class="tutorial-etapa" id="etapa-3">
                 <h2>📘 Organize-se como nunca</h2>
                 <p>Crie <strong>Matérias</strong> (como "Matemática"), dentro delas crie <strong>Pastas</strong> (como "Provas Antigas") e envie os seus <strong>Ficheiros</strong> (PDFs, imagens, etc.).</p>
             </div>
-            <div class="tutorial-etapa" id="etapa-3">
+            
+            <div class="tutorial-etapa" id="etapa-4">
                 <h2>💬 Tire dúvidas a qualquer hora</h2>
                 <p>Use o nosso <strong>Chat IA</strong> para explicar tópicos, resolver problemas e obter resumos. É como ter um professor particular 24 horas por dia!</p>
             </div>
             
-            {% else %}
-            
-            <div class="tutorial-etapa" id="etapa-1-prof">
+            {% else %} <div class="tutorial-etapa" id="etapa-1-prof">
                 <h2>🎓 Bem-vindo(a), Professor(a)!</h2>
-                <p>Você está no Educa AI. Assim que um administrador vincular você a uma turma, seu painel principal será ativado.</p>
+                <p>Você está no Educa AI. Vamos configurar seu perfil rapidamente.</p>
             </div>
+            
             <div class="tutorial-etapa" id="etapa-2-prof">
-                <h2>🚀 Gestão Completa</h2>
-                <p>No painel <strong>Admin</strong>, você poderá criar <strong>Tarefas</strong>, postar <strong>Avisos</strong> no mural dos alunos e adicionar <strong>Matérias</strong> à sua turma.</p>
+                <h2>📸 Configure seu Perfil</h2>
+                <p>Uma foto de perfil ajuda os alunos a identificarem você. (Ou pode pular clicando em "Próximo")</p>
+                <img src="{{ url_for('static', filename='avatars/' + user.profile_pic) }}" 
+                     alt="Foto de Perfil" 
+                     class="profile-pic-tutorial"
+                     onerror="this.src='{{ url_for('static', filename='avatars/default_avatar.png') }}';">
+                
+                <form action="{{ url_for('visoes.upload_avatar') }}" method="post" enctype="multipart/form-data" class="tutorial-upload-form">
+                    <input type="file" name="avatar" accept="image/png, image/jpeg, image/gif" required>
+                    <button type="submit" class="btn-tutorial-upload">Enviar Foto</button>
+                </form>
             </div>
+            
             <div class="tutorial-etapa" id="etapa-3-prof">
+                <h2>🚀 Gestão Completa</h2>
+                <p>No painel <strong>Admin</strong>, você poderá criar <strong>Tarefas</strong>, postar <strong>Avisos</strong> no mural dos alunos e adicionar <strong>Matérias</strong> à sua turma (assim que for vinculado a uma).</p>
+            </div>
+            
+            <div class="tutorial-etapa" id="etapa-4-prof">
                 <h2>📂 Use-o como repositório</h2>
                 <p>Você também pode usar a secção <strong>Matérias</strong> como seu repositório pessoal de arquivos, separado das turmas. Comece a se organizar!</p>
             </div>
@@ -47,7 +88,7 @@
         <div class="tutorial-nav">
             <button id="btn-anterior" class="btn-tutorial" style="visibility: hidden;">Anterior</button>
             <div class="etapa-indicadores">
-                <span class="active"></span><span></span><span></span>
+                <span class="active"></span><span></span><span></span><span></span>
             </div>
             <button id="btn-proximo" class="btn-tutorial">Próximo</button>
             <button id="btn-comecar" class="btn-tutorial" style="display: none;">Começar!</button>
@@ -63,7 +104,8 @@
             const indicadores = document.querySelectorAll('.etapa-indicadores span');
             
             let etapaAtual = 0;
-            const totalEtapas = 3;
+            // --- MUDANÇA AQUI, GIVA ---
+            const totalEtapas = 4; // AGORA SÃO 4 ETAPAS
 
             function atualizarInterface() {
                 slider.style.transform = `translateX(-${etapaAtual * 100}%)`;
