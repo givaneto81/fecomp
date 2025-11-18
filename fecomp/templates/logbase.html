@@ -12,6 +12,15 @@
 </head>
 <body class="login-page">
 
+    <div class="mobile-warning-overlay">
+        <div class="mobile-warning-content">
+            <img src="{{ url_for('static', filename='imagens/logo.png') }}" alt="Logo Educa AI" style="width: 100px; height: 100px; border-radius: 50%;">
+            <h2 style="color: white; margin-top: 10px;">Aviso de Compatibilidade</h2>
+            <p>O Educa AI foi projetado para uma experiência otimizada em desktop.</p>
+            <p>A versão mobile ainda não está disponível e pode apresentar problemas de layout ou funcionalidade.</p>
+            <p style="font-weight: 600; margin-top: 10px;">Para a melhor experiência, por favor, acesse através de um computador.</p>
+        </div>
+    </div>
     {% block content %}
     {% endblock %}
     

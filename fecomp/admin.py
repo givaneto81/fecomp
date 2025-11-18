@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+import os # <<< 1. ADICIONA ESSE IMPORT LÁ NO TOPO
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app # <<< 2. ADICIONA 'current_app' AQUI
 import datetime
 from .models import User, Course, Subject, Task, Announcement, Submission
 from .extensions import db
@@ -458,3 +459,59 @@ def toggle_feature_subject(subject_id):
             flash(f'Erro ao alterar destaque: {e}', 'error')
     
     return redirect(url_for('admin_bp.manage_course', course_id=course.id))
+
+
+# --- ROTA PARA EXCLUIR UTILIZADOR ---
+
+@admin_bp.route('/user/<int:user_id>/delete', methods=['POST'])
+@login_required
+@role_required(['admin'])
+def delete_user(user_id):
+    form = EmptyForm()
+    if not form.validate_on_submit():
+        flash('Falha na submissão do formulário.', 'error')
+        return redirect(url_for('admin_bp.manage_users'))
+
+    user_to_delete = User.query.get_or_404(user_id)
+    admin_user_id = session['user_id']
+
+    # --- Guardas de Segurança ---
+    if user_to_delete.id == admin_user_id:
+        flash('Você não pode excluir a si mesmo.', 'error')
+        return redirect(url_for('admin_bp.manage_users'))
+
+    if user_to_delete.email == 'admin@admin' or user_to_delete.id == 1:
+        flash('O administrador principal não pode ser excluído.', 'error')
+        return redirect(url_for('admin_bp.manage_users'))
+
+    if Course.query.filter_by(admin_id=user_to_delete.id).first():
+        flash(f'Não pode excluir {user_to_delete.name}, pois ele é admin de uma turma. Mude o admin da turma primeiro.', 'error')
+        return redirect(url_for('admin_bp.manage_users'))
+
+    try:
+        # --- O "Limpa-Trilhas" ---
+        
+        # 1. Apaga a foto de perfil (avatar)
+        avatar_filename = user_to_delete.profile_pic
+        if avatar_filename != 'default_avatar.png':
+            avatar_path = os.path.join(current_app.root_path, 'static/avatars', avatar_filename)
+            if os.path.exists(avatar_path):
+                os.remove(avatar_path)
+        
+        # 2. Apaga Entregas (Submissions) órfãs
+        Submission.query.filter_by(student_id=user_to_delete.id).delete()
+        
+        # 3. Apaga Avisos (Announcements) órfãos
+        Announcement.query.filter_by(professor_id=user_to_delete.id).delete()
+        
+        # 4. Apaga o Usuário
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        
+        flash(f'Utilizador {user_to_delete.name} foi excluído com sucesso.', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Erro ao excluir o utilizador: {e}', 'error')
+
+    return redirect(url_for('admin_bp.manage_users'))
