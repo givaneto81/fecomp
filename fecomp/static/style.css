@@ -1,3 +1,7 @@
+/* Para manter responsividade na maioria das telas */
+* {
+    box-sizing: border-box; 
+}
 /* ==========================================================================
    1. CONFIGURAÇÃO DE TEMAS (VARIÁVEIS GLOBAIS)
    ========================================================================== */
@@ -1363,7 +1367,13 @@ body.dark-mode .theme-toggle-btn .sun-icon { display: none; }
     .content {
         margin-left: 0;
         width: 100%;
-        padding-top: 70px; 
+        padding: 80px 15px 20px 15px; 
+    }
+
+    .login-container {
+        padding: 20px 25px;
+        width: 90%;         
+        max-width: 400px;   
     }
 }
 
@@ -1455,68 +1465,4 @@ body.dark-mode .theme-toggle-btn .sun-icon { display: none; }
 }
 .tutorial-upload-form .btn-tutorial-upload:hover {
     background-color: var(--success-hover-color);
-}
-
-/* ==========================================================================
-   11. AVISO DE MOBILE
-   ========================================================================== */
-
-/* Por padrão, o aviso tá escondido no desktop */
-.mobile-warning-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* Usa o fundo da sidebar pra ficar temático */
-    background-color: var(--sidebar-bg-color); 
-    color: var(--text-color-sidebar);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-    /* Botar a fonte do site */
-    font-family: 'Poppins', sans-serif;
-}
-
-.mobile-warning-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-/* Deixei o H2 branco pra destacar */
-.mobile-warning-content h2 {
-    color: white;
-    margin: 0;
-}
-
-.mobile-warning-content p {
-    font-size: 1.1em;
-    line-height: 1.6;
-    max-width: 400px;
-    margin: 0;
-}
-
-/* quando a tela for pequena (o breakpoint de 992px) */
-@media (max-width: 992px) {
-    
-    /* 1. Mostra o aviso */
-    .mobile-warning-overlay {
-        display: flex;
-    }
-
-    /* 2. Esconde o site de login */
-    body.login-page .login-container {
-        display: none;
-    }
-
-    /* 3. Esconde o app principal */
-    .main-container {
-        display: none;
-    }
 }

@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Lógica para o botão de menu em ecrãs pequenos
     if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             sidebar.classList.toggle('active');
         });
     }
