@@ -513,7 +513,7 @@ body.login-page {
 /* --- Formulário de Adicionar (Matéria, Pasta) --- */
 .form-container {
     width: 100%;
-    max-width: 900px;
+    max-width: 2000px;
     margin-bottom: 30px;
     background-color: var(--content-bg-color);
     padding: 20px;
